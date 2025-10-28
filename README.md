@@ -12,6 +12,6 @@ It is designed to represent and manage relationships between **clients**, **cons
 The system provides a structured way to handle **legal cases** and **consultations** while maintaining data integrity and consistency across all entities.
 
 ## Purpose
-The goal of this project is to make a comprehensive data model that supports IP-related legal processes — from client consultations to case management — enabling efficient tracking of intellectual property and associated legal documentation.
+The goal of this project is to create a comprehensive data model that supports IP-related legal processes — from client consultations to case management — enabling efficient tracking of intellectual property and associated legal documentation.
 
 
