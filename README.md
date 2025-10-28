@@ -1,4 +1,4 @@
-﻿# Intellectual Property & Legal Contract Management System
+# Intellectual Property & Legal Contract Management System
 
 ## Overview
 This project models an **Intellectual Property (IP) Legal Management System**.  
