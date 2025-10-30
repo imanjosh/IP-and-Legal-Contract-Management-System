@@ -1,6 +1,4 @@
-## Summary
-
-This project models an **Intellectual Property (IP) Legal Management System**.  
-It represents the relationships between **clients**, **consultant lawyers**, **legal cases**, and various types of **intellectual property** — including **patents**, **trademarks**, **copyrights**, and **trade secrets**.
-
+Summary
+This project models an Intellectual Property (IP) Legal Management System.
+It represents the relationships between clients, consultant lawyers, legal cases, and various types of intellectual property — including patents, trademarks, copyrights, and trade secrets.
 The system is designed to manage consultations, maintain legal case data, and capture dependencies between entities for accurate data integrity and efficient legal process tracking.
