@@ -16,5 +16,5 @@ The goal of this project is to create a comprehensive data model that supports I
 
 ## Collaborators
 Ankit
-Imanjosh
 Lalith Krishna
+Imanjosh
