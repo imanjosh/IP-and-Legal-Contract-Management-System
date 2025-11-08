@@ -15,3 +15,5 @@ The system provides a structured way to handle **legal cases** and **consultatio
 The goal of this project is to create a comprehensive data model that supports IP-related legal processes ,from client consultations to case management enabling efficient tracking of intellectual property and associated legal documentation.
 
 Test - Check in meeting
+
+Ankit
