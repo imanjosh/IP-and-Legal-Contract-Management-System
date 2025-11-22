@@ -15,6 +15,7 @@ router.get('/check-db-connection', async (req, res) => {
     }
 });
 
+/*
 router.get('/demotable', async (req, res) => {
     const tableContent = await appService.fetchDemotableFromDb();
     res.json({data: tableContent});
@@ -60,6 +61,53 @@ router.get('/count-demotable', async (req, res) => {
         res.status(500).json({ 
             success: false, 
             count: tableCount
+        });
+    }
+});
+*/
+
+router.put('/consultants/:consultant_id', async (req, res) => {
+    const consultant_id = req.params.consultant_id;
+
+    const {
+        name,
+        license_number,
+        years_experience,
+        specialization,
+        contact_details
+    } = req.body;
+
+    if (!name || !license_number || !years_experience || !specialization || !contact_details) {
+        return res.status(400).json({
+            success: false,
+            message: "Missing required fields."
+        });
+    }
+
+    try {
+        const updated = await appService.updateConsultant(
+            consultant_id,
+            name,
+            license_number,
+            years_experience,
+            specialization,
+            contact_details
+        );
+
+        if (updated) {
+            res.json({ success: true, message: "Consultant updated successfully." });
+        } else {
+            res.status(404).json({
+                success: false,
+                message: "Consultant not found."
+            });
+        }
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({
+            success: false,
+            message: "Internal server error while updating consultant."
         });
     }
 });

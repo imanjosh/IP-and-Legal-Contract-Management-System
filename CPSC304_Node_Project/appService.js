@@ -76,6 +76,7 @@ async function testOracleConnection() {
     });
 }
 
+/*
 async function fetchDemotableFromDb() {
     return await withOracleDB(async (connection) => {
         const result = await connection.execute('SELECT * FROM DEMOTABLE');
@@ -142,11 +143,37 @@ async function countDemotable() {
     });
 }
 
+*/
+async function updateConsultant(consultant_id, name, license_number, years_experience, specialization, contact_details) {
+    return await withOracleDB(async (connection) => {
+        const result = await connection.execute(
+            `UPDATE Consultant_Lawyer
+             SET name = :name,
+                 license_number = :license_number,
+                 years_experience = :years_experience,
+                 specialization = :specialization,
+                 contact_details = :contact_details
+             WHERE consultant_id = :consultant_id`,
+            {
+                consultant_id,
+                name,
+                license_number,
+                years_experience,
+                specialization,
+                contact_details
+            },
+            { autoCommit: true }
+        );
+
+        return result.rowsAffected > 0;
+    }).catch(() => {
+        return false;
+    });
+}
+
+
 module.exports = {
     testOracleConnection,
-    fetchDemotableFromDb,
-    initiateDemotable, 
-    insertDemotable, 
-    updateNameDemotable, 
-    countDemotable
+   
+    updateConsultant
 };
