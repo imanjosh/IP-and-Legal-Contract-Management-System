@@ -113,4 +113,28 @@ router.put('/consultants/:consultant_id', async (req, res) => {
 });
 
 
+router.get('/consultants/filter', async (req, res) => {
+    try {
+        const filters = {
+            name: req.query.name || null,
+            license_number: req.query.license_number || null,
+            min_exp: req.query.min_exp || null,
+            max_exp: req.query.max_exp || null,
+            specialization: req.query.specialization || null,
+            contact: req.query.contact || null
+        };
+
+        const rows = await appService.filterConsultantsService(filters);
+        res.json({ success: true, data: rows });
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({
+            success: false,
+            message: "Internal error while filtering consultants."
+        });
+    }
+});
+
+
 module.exports = router;

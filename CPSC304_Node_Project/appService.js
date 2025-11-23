@@ -171,9 +171,40 @@ async function updateConsultant(consultant_id, name, license_number, years_exper
     });
 }
 
+async function filterConsultantsService(filters) {
+    return await withOracleDB(async (connection) => {
+
+        const sql = `
+            SELECT consultant_id, name, license_number, years_experience,
+                   specialization, contact_details
+            FROM Consultant_Lawyer
+            WHERE 1=1
+                AND (:name IS NULL OR LOWER(name) LIKE LOWER(:name))
+                AND (:license_number IS NULL OR license_number = :license_number)
+                AND (:min_exp IS NULL OR years_experience >= :min_exp)
+                AND (:max_exp IS NULL OR years_experience <= :max_exp)
+                AND (:specialization IS NULL OR specialization = :specialization)
+                AND (:contact IS NULL OR LOWER(contact_details) LIKE LOWER(:contact))
+        `;
+
+        const binds = {
+            name: filters.name ? `%${filters.name}%` : null,
+            license_number: filters.license_number || null,
+            min_exp: filters.min_exp || null,
+            max_exp: filters.max_exp || null,
+            specialization: filters.specialization || null,
+            contact: filters.contact ? `%${filters.contact}%` : null
+        };
+
+        const result = await connection.execute(sql, binds, { outFormat: oracledb.OUT_FORMAT_OBJECT });
+        return result.rows;
+    });
+}
+
+
 
 module.exports = {
     testOracleConnection,
-   
-    updateConsultant
+    updateConsultant,
+    filterConsultantsService
 };
