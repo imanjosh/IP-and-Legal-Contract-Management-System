@@ -245,6 +245,26 @@ async function aggregateConsultationsService(params) {
     });
 }
 
+async function divisionConsultantsService() {
+    return await withOracleDB(async (connection) => {
+        const result = await connection.execute(
+            `SELECT c.consultant_id, c.name
+             FROM Consultant_Lawyer c
+             WHERE NOT EXISTS (
+                 SELECT type
+                 FROM ConsultationType t
+                 WHERE NOT EXISTS (
+                     SELECT *
+                     FROM ConsultationBase cb
+                     WHERE cb.consultant_id = c.consultant_id
+                     AND cb.type = t.type
+                 )
+             )`
+        );
+        return result.rows;
+    });
+}
+
 
 
 
@@ -253,6 +273,8 @@ module.exports = {
     updateConsultant,
     filterConsultantsService,
     joinConsultationsService,
-    aggregateConsultationsService
+    aggregateConsultationsService,
+    divisionConsultantsService
+
     
 };

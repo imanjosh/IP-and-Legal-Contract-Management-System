@@ -177,6 +177,21 @@ router.get('/consultations/aggregate', async (req, res) => {
     }
 });
 
+router.get('/consultants/division', async (req, res) => {
+    try {
+        const rows = await appService.divisionConsultantsService();
+        res.json({ success: true, data: rows });
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({
+            success: false,
+            message: "Internal error while performing division query."
+        });
+    }
+});
+
+
 
 
 module.exports = router;
