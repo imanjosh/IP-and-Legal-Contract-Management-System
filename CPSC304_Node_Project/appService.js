@@ -201,10 +201,37 @@ async function filterConsultantsService(filters) {
     });
 }
 
+async function joinConsultationsService(params) {
+    return await withOracleDB(async (connection) => {
+        const result = await connection.execute(
+            `SELECT c.consultation_id,
+                    c.consultation_date,
+                    c.type,
+                    DBMS_LOB.SUBSTR(c.notes, 4000) AS notes,
+                    l.consultant_id,
+                    l.name AS consultant_name,
+                    l.specialization
+             FROM ConsultationBase c
+             JOIN Consultant_Lawyer l
+                 ON c.consultant_id = l.consultant_id
+             WHERE 1=1
+               AND (:name IS NULL OR LOWER(l.name) LIKE LOWER('%' || :name || '%'))
+               AND (:type IS NULL OR c.type = :type)
+               AND (:date_from IS NULL OR c.consultation_date >= :date_from)
+               AND (:date_to IS NULL OR c.consultation_date <= :date_to)
+            `,
+            params
+        );
+        return result.rows;
+    });
+}
+
+
 
 
 module.exports = {
     testOracleConnection,
     updateConsultant,
-    filterConsultantsService
+    filterConsultantsService,
+    joinConsultationsService
 };

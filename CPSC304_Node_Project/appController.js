@@ -136,5 +136,29 @@ router.get('/consultants/filter', async (req, res) => {
     }
 });
 
+router.get('/consultations/join', async (req, res) => {
+    try {
+        const filters = {
+            name: req.query.name || null,
+            type: req.query.type || null,
+            date_from: req.query.date_from || null,
+            date_to: req.query.date_to || null
+        };
+
+        const rows = await appService.joinConsultationsService(filters);
+
+        res.json({ success: true, data: rows });
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({
+            success: false,
+            message: "Internal error while executing join query."
+        });
+    }
+});
+
+
+
 
 module.exports = router;
