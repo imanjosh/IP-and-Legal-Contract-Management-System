@@ -158,6 +158,24 @@ router.get('/consultations/join', async (req, res) => {
     }
 });
 
+router.get('/consultations/aggregate', async (req, res) => {
+    try {
+        const minCount = parseInt(req.query.min_count, 10) || 0;
+
+        const rows = await appService.aggregateConsultationsService({
+            min_count: minCount
+        });
+
+        res.json({ success: true, data: rows });
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({
+            success: false,
+            message: "Internal error while aggregating."
+        });
+    }
+});
 
 
 

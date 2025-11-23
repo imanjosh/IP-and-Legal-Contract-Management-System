@@ -226,6 +226,25 @@ async function joinConsultationsService(params) {
     });
 }
 
+async function aggregateConsultationsService(params) {
+    return await withOracleDB(async (connection) => {
+        const result = await connection.execute(
+            `SELECT 
+                c.consultant_id,
+                l.name AS consultant_name,
+                COUNT(*) AS num_consultations
+             FROM ConsultationBase c
+             JOIN Consultant_Lawyer l
+                ON c.consultant_id = l.consultant_id
+             GROUP BY c.consultant_id, l.name
+             HAVING COUNT(*) > :min_count`,
+            params
+        );
+
+        return result.rows;
+    });
+}
+
 
 
 
@@ -233,5 +252,7 @@ module.exports = {
     testOracleConnection,
     updateConsultant,
     filterConsultantsService,
-    joinConsultationsService
+    joinConsultationsService,
+    aggregateConsultationsService
+    
 };
