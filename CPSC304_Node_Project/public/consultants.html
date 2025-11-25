@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Consultants</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <aside class="sidebar">
+    <h2>IP Legal DB</h2>
+    <nav class="menu">
+      <a href="index.html">🏠 Home</a>
+      <a href="clients.html">👤 Clients</a>
+      <a href="consultants.html">⚖️ Consultants</a>
+      <a href="iprecords.html">💡 IP Records</a>
+      <a href="cases.html">📁 Cases</a>
+      <a href="consultations.html" class="active">📅 Consultations</a>
+    </nav>
+  </aside>
+
+  <main class="content">
+    <h1>Consultants</h1>
+    <div class="card">
+      <h2>Existing Consultants</h2>
+      <div class="form-actions">
+        <button class="btn submit" id="refreshBtn">Refresh Table</button>
+      </div>
+      <table class="data-table" id="consultantsTable">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>License Number</th>
+            <th>Years Experience</th>
+            <th>Specialization</th>
+            <th>Contact</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- populated dynamically -->
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card search-card">
+      <h2>Filter Consultants</h2>
+      <div class="search-grid">
+        <div><label>Name</label><input type="text" id="filterName"></div>
+        <div><label>License #</label><input type="text" id="filterLicense"></div>
+        <div><label>Min Exp</label><input type="number" id="filterMinExp"></div>
+        <div><label>Max Exp</label><input type="number" id="filterMaxExp"></div>
+        <div><label>Specialization</label><input type="text" id="filterSpec"></div>
+        <div><label>Contact</label><input type="text" id="filterContact"></div>
+      </div>
+      <div class="form-actions">
+        <button class="btn submit" id="filterBtn">Filter</button>
+        <button class="btn cancel" id="resetBtn">Clear</button>
+      </div>
+    </div>
+
+    <div class="card form-card">
+      <h2>Update Consultant</h2>
+      <form id="consultantForm">
+        <div class="form-group"><label>ID</label><input type="number" name="consultant_id"></div>
+        <div class="form-group"><label>Name</label><input type="text" name="name"></div>
+        <div class="form-group"><label>License Number</label><input type="text" name="license_number"></div>
+        <div class="form-group"><label>Years Experience</label><input type="number" name="years_experience"></div>
+        <div class="form-group"><label>Specialization</label><input type="text" name="specialization"></div>
+        <div class="form-group"><label>Contact</label><input type="email" name="contact_details"></div>
+        <div class="form-actions">
+          <button type="submit" class="btn submit">Update</button>
+          <button type="button" class="btn cancel"  id="cancelBtn">Cancel</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="card">
+      <h2>Consultants who have consultations in all types.</h2><h3>(Division Query)</h3>
+      <button class="btn submit" id="divisionBtn">Show Division Results</button>
+      <table class="data-table" id="divisionTable">
+        <thead>
+          <tr><th>ID</th><th>Name</th></tr>
+        </thead>
+        <tbody>
+          <!-- division results -->
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <script src="consultants.js"></script>
+</body>
+</html>
