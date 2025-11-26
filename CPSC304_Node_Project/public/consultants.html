@@ -45,12 +45,64 @@
     <div class="card search-card">
       <h2>Filter Consultants</h2>
       <div class="search-grid">
-        <div><label>Name</label><input type="text" id="filterName"></div>
-        <div><label>License #</label><input type="text" id="filterLicense"></div>
-        <div><label>Min Exp</label><input type="number" id="filterMinExp"></div>
-        <div><label>Max Exp</label><input type="number" id="filterMaxExp"></div>
-        <div><label>Specialization</label><input type="text" id="filterSpec"></div>
-        <div><label>Contact</label><input type="text" id="filterContact"></div>
+
+        <div>
+          <label>Name</label>
+          <input type="text" id="filterName">
+        </div>
+
+        <div>
+          <select id="conn2">
+            <option value="AND">AND</option>
+            <option value="OR">OR</option>
+          </select>
+        </div>
+
+        <div>
+          <label>License #</label>
+          <input type="text" id="filterLicense">
+        </div>
+
+        <div>
+          <select id="conn3">
+            <option value="AND">AND</option>
+            <option value="OR">OR</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Years Experience</label>
+          <div class="range-inline">
+            <input type="number" id="filterMinExp" placeholder="Min">
+            <span>to</span>
+            <input type="number" id="filterMaxExp" placeholder="Max">
+          </div>
+        </div>
+
+        <div>
+          <select id="conn4">
+            <option value="AND">AND</option>
+            <option value="OR">OR</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Specialization</label>
+          <input type="text" id="filterSpec">
+        </div>
+
+        <div>
+          <select id="conn5">
+            <option value="AND">AND</option>
+            <option value="OR">OR</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Contact</label>
+          <input type="text" id="filterContact">
+        </div>
+
       </div>
       <div class="form-actions">
         <button class="btn submit" id="filterBtn">Filter</button>
@@ -58,13 +110,29 @@
       </div>
     </div>
 
+
+
     <div class="card form-card">
       <h2>Update Consultant</h2>
       <form id="consultantForm">
         <div class="form-group"><label>ID</label><input type="number" name="consultant_id"></div>
         <div class="form-group"><label>Name</label><input type="text" name="name"></div>
         <div class="form-group"><label>License Number</label><input type="text" name="license_number"></div>
-        <div class="form-group"><label>Years Experience</label><input type="number" name="years_experience"></div>
+        <div class="form-group"><label>Years Experience</label>
+          <select name="years_experience" id="yearsExperience" class="form-control">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+            <option value="9">9</option>
+            <option value="10">10</option>
+          </select>
+        </div>
+
         <div class="form-group"><label>Specialization</label><input type="text" name="specialization"></div>
         <div class="form-group"><label>Contact</label><input type="email" name="contact_details"></div>
         <div class="form-actions">
