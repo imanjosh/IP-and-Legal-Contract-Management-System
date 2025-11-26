@@ -256,6 +256,19 @@ router.get('/cases/group-by-court', async (req, res) => {
     }
 });
 
+router.get('/consultants/above-average', async (req, res) => {
+    try {
+        const rows = await appService.consultantsAboveAverage();
+        res.json({ success: true, data: rows });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({
+            success: false,
+            message: "Error executing nested aggregation query."
+        });
+    }
+});
+
 
 
 module.exports = router;

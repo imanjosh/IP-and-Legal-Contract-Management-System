@@ -412,6 +412,33 @@ async function groupCasesByCourt() {
     });
 }
 
+async function consultantsAboveAverage() {
+    return await withOracleDB(async (connection) => {
+        const result = await connection.execute(
+            `SELECT 
+                c.consultant_id,
+                c.name,
+                c.specialization,
+                COUNT(cb.consultation_id) AS num_consultations
+             FROM Consultant_Lawyer c
+             LEFT JOIN ConsultationBase cb ON c.consultant_id = cb.consultant_id
+             GROUP BY c.consultant_id, c.name, c.specialization
+             HAVING COUNT(cb.consultation_id) > (
+                 SELECT AVG(consultation_count)
+                 FROM (
+                     SELECT COUNT(consultation_id) AS consultation_count
+                     FROM ConsultationBase
+                     GROUP BY consultant_id
+                 )
+             )
+             ORDER BY num_consultations DESC`,
+            [],
+            { outFormat: oracledb.OUT_FORMAT_OBJECT }
+        );
+        return result.rows;
+    });
+}
+
 
 
 module.exports = {
@@ -424,7 +451,8 @@ module.exports = {
     insertCase,
     deleteCase,
     projectConsultants,
-    groupCasesByCourt
+    groupCasesByCourt,
+    consultantsAboveAverage
 
     
 };
