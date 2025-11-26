@@ -79,7 +79,7 @@ INSERT INTO IP_merge_has_an VALUES (102, DATE '2021-06-20', 'Pending', 'AI drug 
 INSERT INTO IP_merge_has_an VALUES (103, DATE '2019-11-05', 'Expired', 'Online learning platform', 'EduLearn', 'REG-003', 3);
 INSERT INTO IP_merge_has_an VALUES (104, DATE '2022-02-10', 'Approved', 'Mobile banking app', 'BankEase', 'REG-004', 4);
 INSERT INTO IP_merge_has_an VALUES (105, DATE '2023-08-25', 'Pending', 'Organic fertilizer formula', 'GreenBoost', 'REG-005', 5);
-
+INSERT INTO IP_merge_has_an VALUES (106, DATE '2025-11-25', 'Pending', 'Test IP for case insertion', 'Test Patent', 'REG-006', 1);
 
 CREATE TABLE Seniority (
     years_experience INTEGER,

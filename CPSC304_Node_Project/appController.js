@@ -191,6 +191,26 @@ router.get('/consultants/division', async (req, res) => {
     }
 });
 
+router.post('/cases/insert', async (req, res) => {
+    const { case_id, consultant_id, ip_id, court_id, description, status, open_date, close_date } = req.body;
+    
+    const insertResult = await appService.insertCase(
+        case_id, 
+        consultant_id, 
+        ip_id, 
+        court_id, 
+        description, 
+        status, 
+        open_date, 
+        close_date
+    );
+    
+    if (insertResult.success) {
+        res.json({ success: true, message: insertResult.message });
+    } else {
+        res.status(400).json({ success: false, message: insertResult.message });
+    }
+});
 
 
 

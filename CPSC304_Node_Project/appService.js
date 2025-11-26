@@ -265,6 +265,57 @@ async function divisionConsultantsService() {
     });
 }
 
+async function insertCase(case_id, consultant_id, ip_id, court_id, description, status, open_date, close_date) {
+    return await withOracleDB(async (connection) => {
+        try {
+            // Check if consultant exists
+            const consultantCheck = await connection.execute(
+                `SELECT consultant_id FROM Consultant_Lawyer WHERE consultant_id = :consultant_id`,
+                [consultant_id]
+            );
+            if (consultantCheck.rows.length === 0) {
+                return { success: false, message: `Consultant with ID ${consultant_id} does not exist.` };
+            }
+
+            // Check if IP exists
+            const ipCheck = await connection.execute(
+                `SELECT ip_id FROM IP_merge_has_an WHERE ip_id = :ip_id`,
+                [ip_id]
+            );
+            if (ipCheck.rows.length === 0) {
+                return { success: false, message: `IP with ID ${ip_id} does not exist.` };
+            }
+
+            // Check if court exists
+            const courtCheck = await connection.execute(
+                `SELECT court_id FROM Court WHERE court_id = :court_id`,
+                [court_id]
+            );
+            if (courtCheck.rows.length === 0) {
+                return { success: false, message: `Court with ID ${court_id} does not exist.` };
+            }
+
+            // Insert the case
+            const result = await connection.execute(
+                `INSERT INTO "Case" (case_id, consultant_id, ip_id, court_id, description, status, open_date, close_date)
+                 VALUES (:case_id, :consultant_id, :ip_id, :court_id, :description, :status, 
+                         TO_DATE(:open_date, 'YYYY-MM-DD'), TO_DATE(:close_date, 'YYYY-MM-DD'))`,
+                [case_id, consultant_id, ip_id, court_id, description, status, open_date, close_date],
+                { autoCommit: true }
+            );
+
+            return { success: result.rowsAffected > 0, message: "Case inserted successfully." };
+        } catch (err) {
+            if (err.errorNum === 1) {
+                return { success: false, message: "Case ID already exists or IP is already assigned to another case." };
+            }
+            throw err;
+        }
+    }).catch(() => {
+        return { success: false, message: "Error inserting case." };
+    });
+}
+
 
 
 
@@ -274,7 +325,8 @@ module.exports = {
     filterConsultantsService,
     joinConsultationsService,
     aggregateConsultationsService,
-    divisionConsultantsService
+    divisionConsultantsService,
+    insertCase
 
     
 };
