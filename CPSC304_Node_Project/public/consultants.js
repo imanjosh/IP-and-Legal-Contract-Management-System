@@ -66,6 +66,7 @@ async function loadDivisionResults() {
 // Event listeners
 document.getElementById('refreshBtn').addEventListener('click', () => loadConsultants());
 
+// Modified filter logic with AND/OR connectors
 document.getElementById('filterBtn').addEventListener('click', () => {
   const filters = {
     name: document.getElementById('filterName').value,
@@ -73,20 +74,27 @@ document.getElementById('filterBtn').addEventListener('click', () => {
     min_exp: document.getElementById('filterMinExp').value,
     max_exp: document.getElementById('filterMaxExp').value,
     specialization: document.getElementById('filterSpec').value,
-    contact: document.getElementById('filterContact').value
+    contact: document.getElementById('filterContact').value,
+
+    // connectors between clauses
+    conn2: document.getElementById('conn2')?.value || 'AND',
+    conn3: document.getElementById('conn3')?.value || 'AND',
+    conn4: document.getElementById('conn4')?.value || 'AND',
+    conn5: document.getElementById('conn5')?.value || 'AND'
   };
   loadConsultants(filters);
 });
 
 document.getElementById('resetBtn').addEventListener('click', () => {
-  document.getElementById('filterName').value = '';
-  document.getElementById('filterLicense').value = '';
-  document.getElementById('filterMinExp').value = '';
-  document.getElementById('filterMaxExp').value = '';
-  document.getElementById('filterSpec').value = '';
-  document.getElementById('filterContact').value = '';
+  ['filterName','filterLicense','filterMinExp','filterMaxExp','filterSpec','filterContact']
+    .forEach(id => document.getElementById(id).value = '');
+  ['conn2','conn3','conn4','conn5'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = 'AND';
+  });
   loadConsultants();
 });
+
 
 document.getElementById('consultantForm').addEventListener('submit', updateConsultantForm);
 
