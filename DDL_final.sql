@@ -88,9 +88,14 @@ CREATE TABLE Seniority (
 );
 
 INSERT INTO Seniority VALUES (1, 'Junior');
+INSERT INTO Seniority VALUES (2, 'Junior+');
 INSERT INTO Seniority VALUES (3, 'Intermediate');
+INSERT INTO Seniority VALUES (4, 'Intermediate+');
 INSERT INTO Seniority VALUES (5, 'Senior');
+INSERT INTO Seniority VALUES (6, 'Senior+');
+INSERT INTO Seniority VALUES (7, 'Advanced');
 INSERT INTO Seniority VALUES (8, 'Lead');
+INSERT INTO Seniority VALUES (9, 'Lead+');
 INSERT INTO Seniority VALUES (10, 'Principal');
 
 
