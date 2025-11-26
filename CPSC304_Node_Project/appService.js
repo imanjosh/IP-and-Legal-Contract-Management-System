@@ -344,6 +344,55 @@ async function deleteCase(case_id) {
     });
 }
 
+async function projectConsultants(attributesString) {
+    return await withOracleDB(async (connection) => {
+        // Define valid attributes
+        const validAttributes = [
+            'consultant_id',
+            'name',
+            'license_number',
+            'years_experience',
+            'specialization',
+            'contact_details'
+        ];
+
+        // Parse and validate attributes
+        const requestedAttributes = attributesString.split(',').map(attr => attr.trim().toLowerCase());
+        
+        // Check if all requested attributes are valid
+        const invalidAttributes = requestedAttributes.filter(attr => !validAttributes.includes(attr));
+        if (invalidAttributes.length > 0) {
+            return {
+                success: false,
+                message: `Invalid attributes: ${invalidAttributes.join(', ')}. Valid attributes are: ${validAttributes.join(', ')}`
+            };
+        }
+
+        if (requestedAttributes.length === 0) {
+            return {
+                success: false,
+                message: "At least one attribute must be specified."
+            };
+        }
+
+        // Build SELECT clause with requested attributes
+        const selectClause = requestedAttributes.join(', ');
+        
+        const result = await connection.execute(
+            `SELECT ${selectClause} FROM Consultant_Lawyer`,
+            [],
+            { outFormat: oracledb.OUT_FORMAT_OBJECT }
+        );
+
+        return {
+            success: true,
+            data: result.rows
+        };
+    }).catch(() => {
+        return { success: false, message: "Error executing projection query." };
+    });
+}
+
 
 
 module.exports = {
@@ -354,7 +403,8 @@ module.exports = {
     aggregateConsultationsService,
     divisionConsultantsService,
     insertCase,
-    deleteCase
+    deleteCase,
+    projectConsultants
 
     
 };

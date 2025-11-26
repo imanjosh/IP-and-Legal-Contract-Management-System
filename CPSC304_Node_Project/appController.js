@@ -224,6 +224,25 @@ router.delete('/cases/delete/:case_id', async (req, res) => {
     }
 });
 
+router.get('/consultants/projection', async (req, res) => {
+    const attributes = req.query.attributes;
+    
+    if (!attributes) {
+        return res.status(400).json({
+            success: false,
+            message: "Please specify attributes to project (e.g., ?attributes=name,specialization)"
+        });
+    }
+    
+    const result = await appService.projectConsultants(attributes);
+    
+    if (result.success) {
+        res.json({ success: true, data: result.data });
+    } else {
+        res.status(400).json({ success: false, message: result.message });
+    }
+});
+
 
 
 module.exports = router;
