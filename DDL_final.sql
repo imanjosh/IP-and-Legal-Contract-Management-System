@@ -308,6 +308,13 @@ INSERT INTO ConsultationBase VALUES (502, 2, 202, DATE '2023-02-14', 'Detailed A
 INSERT INTO ConsultationBase VALUES (503, 3, 203, DATE '2023-03-05', 'Follow-up', 'Reviewed education platform IP');
 INSERT INTO ConsultationBase VALUES (504, 4, 204, DATE '2023-04-12', 'Expert Opinion', 'Trademark dispute analysis');
 INSERT INTO ConsultationBase VALUES (505, 5, 205, DATE '2023-05-20', 'Full-Day Session', 'Copyright protection strategy');
+-- Consultant 201 (Laura King) gets consultations in all types
+INSERT INTO ConsultationBase VALUES (506, 1, 201, DATE '2023-06-01', 'Initial Review', 'Second review of patent filing');
+INSERT INTO ConsultationBase VALUES (507, 1, 201, DATE '2023-06-15', 'Detailed Assessment', 'Deep dive into patent scope');
+INSERT INTO ConsultationBase VALUES (508, 1, 201, DATE '2023-07-01', 'Follow-up', 'Checked progress on IP filing');
+INSERT INTO ConsultationBase VALUES (509, 1, 201, DATE '2023-07-20', 'Expert Opinion', 'Provided expert testimony on IP');
+INSERT INTO ConsultationBase VALUES (510, 1, 201, DATE '2023-08-05', 'Full-Day Session', 'Comprehensive strategy workshop');
+
 
 
 CREATE TABLE "Case" (
