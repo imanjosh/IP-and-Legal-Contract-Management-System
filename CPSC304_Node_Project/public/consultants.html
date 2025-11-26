@@ -10,11 +10,9 @@
     <h2>IP Legal DB</h2>
     <nav class="menu">
       <a href="index.html">🏠 Home</a>
-      <a href="clients.html">👤 Clients</a>
       <a href="consultants.html">⚖️ Consultants</a>
-      <a href="iprecords.html">💡 IP Records</a>
-      <a href="cases.html">📁 Cases</a>
-      <a href="consultations.html" class="active">📅 Consultations</a>
+      <a href="cases.html" class="active">📁 Cases</a>
+      <a href="consultations.html">📅 Consultations</a>
     </nav>
   </aside>
 
@@ -154,6 +152,51 @@
         </tbody>
       </table>
     </div>
+
+    
+    <div class="card">
+      <h2>Projection of Consultants</h2>
+      <div class="form-group">
+        <label>Attributes (comma separated)</label>
+        <input type="text" id="projAttributes" placeholder="e.g. name,specialization">
+      </div>
+      <div class="form-actions">
+        <button class="btn submit" id="projBtn">Run Projection Query</button>
+      </div>
+      <table class="data-table" id="projectionTable">
+        <thead>
+          <tr>
+            <!-- Columns will depend on attributes entered -->
+          </tr>
+        </thead>
+        <tbody>
+          <!-- populated dynamically -->
+        </tbody>
+      </table>
+    </div>
+
+
+    <div class="card">
+      <h2>Consultants Above Average Consultations</h2>
+      <div class="form-actions">
+        <button class="btn submit" id="aboveAvgBtn">Run Above Average Query</button>
+      </div>
+      <table class="data-table" id="aboveAvgTable">
+        <thead>
+          <tr>
+            <th>Consultant ID</th>
+            <th>Name</th>
+            <th>Specialization</th>
+            <th>Number of Consultations</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- populated dynamically -->
+        </tbody>
+      </table>
+    </div>
+
+
   </main>
 
   <script src="consultants.js"></script>
