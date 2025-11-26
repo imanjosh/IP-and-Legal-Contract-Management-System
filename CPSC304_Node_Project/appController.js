@@ -212,6 +212,18 @@ router.post('/cases/insert', async (req, res) => {
     }
 });
 
+router.delete('/cases/delete/:case_id', async (req, res) => {
+    const case_id = req.params.case_id;
+    
+    const deleteResult = await appService.deleteCase(case_id);
+    
+    if (deleteResult.success) {
+        res.json({ success: true, message: deleteResult.message });
+    } else {
+        res.status(404).json({ success: false, message: deleteResult.message });
+    }
+});
+
 
 
 module.exports = router;

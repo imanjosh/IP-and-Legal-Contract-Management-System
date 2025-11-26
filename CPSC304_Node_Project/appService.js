@@ -316,6 +316,33 @@ async function insertCase(case_id, consultant_id, ip_id, court_id, description, 
     });
 }
 
+async function deleteCase(case_id) {
+    return await withOracleDB(async (connection) => {
+        // Check if case exists
+        const checkCase = await connection.execute(
+            `SELECT case_id FROM "Case" WHERE case_id = :case_id`,
+            [case_id]
+        );
+
+        if (checkCase.rows.length === 0) {
+            return { success: false, message: `Case with ID ${case_id} does not exist.` };
+        }
+
+        // Delete the case (will cascade to Uses table automatically)
+        const result = await connection.execute(
+            `DELETE FROM "Case" WHERE case_id = :case_id`,
+            [case_id],
+            { autoCommit: true }
+        );
+
+        return { 
+            success: result.rowsAffected > 0, 
+            message: `Case ${case_id} deleted successfully. Related Uses records were also removed due to cascade.` 
+        };
+    }).catch(() => {
+        return { success: false, message: "Error deleting case." };
+    });
+}
 
 
 
@@ -326,7 +353,8 @@ module.exports = {
     joinConsultationsService,
     aggregateConsultationsService,
     divisionConsultantsService,
-    insertCase
+    insertCase,
+    deleteCase
 
     
 };
