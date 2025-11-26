@@ -243,6 +243,19 @@ router.get('/consultants/projection', async (req, res) => {
     }
 });
 
+router.get('/cases/group-by-court', async (req, res) => {
+    try {
+        const rows = await appService.groupCasesByCourt();
+        res.json({ success: true, data: rows });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({
+            success: false,
+            message: "Error executing GROUP BY query."
+        });
+    }
+});
+
 
 
 module.exports = router;

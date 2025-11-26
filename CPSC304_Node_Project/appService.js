@@ -393,6 +393,25 @@ async function projectConsultants(attributesString) {
     });
 }
 
+async function groupCasesByCourt() {
+    return await withOracleDB(async (connection) => {
+        const result = await connection.execute(
+            `SELECT 
+                co.court_id,
+                co.name AS court_name,
+                co.jurisdiction,
+                COUNT(ca.case_id) AS total_cases
+             FROM Court co
+             LEFT JOIN "Case" ca ON co.court_id = ca.court_id
+             GROUP BY co.court_id, co.name, co.jurisdiction
+             ORDER BY total_cases DESC`,
+            [],
+            { outFormat: oracledb.OUT_FORMAT_OBJECT }
+        );
+        return result.rows;
+    });
+}
+
 
 
 module.exports = {
@@ -404,7 +423,8 @@ module.exports = {
     divisionConsultantsService,
     insertCase,
     deleteCase,
-    projectConsultants
+    projectConsultants,
+    groupCasesByCourt
 
     
 };
