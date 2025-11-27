@@ -24,6 +24,7 @@
       <h2>📝 Insert New Case</h2>
       <p class="help-text">Create a new legal case. All required fields marked with <strong>*</strong> must be filled.</p>
       <p class="input-help">💡 Example IDs - Consultants: 201-205, IPs: 101-106, Courts: 301-305 (you can use other valid IDs too)</p>
+      <p class="input-help">🔍 The user must refer to the <strong>Consultant_Lawyer</strong> table, <strong>IP_merge_has_an</strong> table and the <strong>Court</strong> table to get the related ID's</p>
       <form id="caseForm">
         <div class="form-group">
           <label>Case ID <span style="color: red;">*</span></label>
@@ -32,17 +33,17 @@
         <div class="form-group">
           <label>Consultant Lawyer ID <span style="color: red;">*</span></label>
           <input type="number" name="consultant_id" placeholder="e.g., 201" required>
-          <span class="input-help">Lawyer handling this case</span>
+          <span class="input-help">Lawyer handling this case: Refer from <strong>Consultant_Lawyer</strong> table</span>
         </div>
         <div class="form-group">
           <label>Intellectual Property ID <span style="color: red;">*</span></label>
           <input type="number" name="ip_id" placeholder="e.g., 101" required>
-          <span class="input-help">IP involved in this case</span>
+          <span class="input-help">IP involved in this case: Refer from <strong>IP_merge_has_an</strong> table</span>
         </div>
         <div class="form-group">
           <label>Court ID <span style="color: red;">*</span></label>
           <input type="number" name="court_id" placeholder="e.g., 301" required>
-          <span class="input-help">Court where case is filed</span>
+          <span class="input-help">Court where case is filed: Refer from <strong>Court</strong> table</span>
         </div>
         <div class="form-group">
           <label>Case Description</label>
