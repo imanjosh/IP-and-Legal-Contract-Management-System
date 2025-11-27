@@ -34,7 +34,7 @@ function renderTable(rows, tableId) {
     let date_to = document.getElementById('joinDateTo').value;
 
     if (!name && !type && !date_from && !date_to) {
-        alert('Please enter at least one search filter.');
+        alert(json.message || 'Please enter at least one search filter.');
         return;
     }
 
@@ -49,14 +49,18 @@ function renderTable(rows, tableId) {
         date_from: date_from === null ? "" : date_from,
         date_to: date_to === null ? "" : date_to
     });
+    try {
+      const res = await fetch(`/consultations/join?${params.toString()}`);
+      const json = await res.json();
 
-    const res = await fetch(`/consultations/join?${params.toString()}`);
-    const json = await res.json();
-
-    if (json.success) {
-        renderTable(json.data, 'joinTable');
-    } else {
-        alert(json.message || "Error running join query.");
+      if (json.success) {
+          renderTable(json.data, 'joinTable');
+      } else {
+          alert(json.message || "Error running join query.");
+      }
+    } catch (error) {
+      alert('Error running join query: ' + error.message);
+      console.error('Error running join query:', error);
     }
 }
 
@@ -71,19 +75,24 @@ function renderTable(rows, tableId) {
   
   async function runAggregateQuery() {
     const minCount = document.getElementById('aggMinCount').value || 0;
-  
-    const res = await fetch('/consultations/aggregate', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ min_count: Number(minCount) })
-    });
-  
-    const json = await res.json();
-  
-    if (json.success) {
-      renderTable(json.data, 'aggTable');
-    } else {
-      alert('Error running aggregate query');
+    try {      
+      const res = await fetch('/consultations/aggregate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ min_count: Number(minCount) })
+      });
+    
+      const json = await res.json();
+    
+      if (json.success) {
+        renderTable(json.data, 'aggTable');
+      } else {
+        alert(json.message || 'Error running aggregate query');
+      }
+    } catch (error) {
+        // Catch any errors during the fetch or JSON parsing
+        console.error("Error running aggregate query:", error);
+        alert("Error running aggregate query:", error);
     }
   }
   
