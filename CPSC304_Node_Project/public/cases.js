@@ -18,29 +18,25 @@ function renderTable(rows, tableId) {
     });
   }
   
-  async function loadCases() {
-    const res = await fetch('/cases/all');
-    const json = await res.json();
-    if (json.success) {
-      renderTable(json.data, 'casesTable');
-    }
-  }
-  
   async function insertCase(event) {
     event.preventDefault();
     const formData = new FormData(event.target);
     const caseObj = Object.fromEntries(formData.entries());
   
-    const res = await fetch('/cases/insert', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(caseObj)
-    });
-    const json = await res.json();
-    if (json.success) {
-      alert('Case inserted.');
-      loadCases();
-      event.target.reset();
+    try {
+      const res = await fetch('/cases/insert', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(caseObj)
+      });
+      const json = await res.json();
+      alert(json.message);
+      if (json.success) {
+        event.target.reset();
+      }
+    } catch (error) {
+      alert('Error inserting case: ' + error.message);
+      console.error('Insert error:', error);
     }
   }
   
@@ -50,10 +46,7 @@ function renderTable(rows, tableId) {
   
     const res = await fetch(`/cases/delete/${caseId}`, { method: 'DELETE' });
     const json = await res.json();
-    if (json.success) {
-      alert('Deleted.');
-      loadCases();
-    }
+    alert(json.message);
   }
   
   async function loadGroupByCourt() {
@@ -64,13 +57,10 @@ function renderTable(rows, tableId) {
     }
   }
   
-  document.getElementById('refreshCasesBtn').addEventListener('click', loadCases);
   document.getElementById('caseForm').addEventListener('submit', insertCase);
   document.getElementById('cancelCaseBtn').addEventListener('click', () =>
     document.getElementById('caseForm').reset()
   );
   document.getElementById('deleteCaseBtn').addEventListener('click', deleteCase);
   document.getElementById('groupByCourtBtn').addEventListener('click', loadGroupByCourt);
-  
-  loadCases();
   
