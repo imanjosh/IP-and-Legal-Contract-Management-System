@@ -21,20 +21,50 @@
     <h1>Cases</h1>
 
     <div class="card form-card">
-      <h2>Insert Case</h2>
-      <p class="help-text">Insert a new case. Ensure IDs exist before inserting.</p>
+      <h2>📝 Insert New Case</h2>
+      <p class="help-text">Create a new legal case. All required fields marked with <strong>*</strong> must be filled.</p>
+      <p class="input-help">💡 Example IDs - Consultants: 201-205, IPs: 101-106, Courts: 301-305 (you can use other valid IDs too)</p>
       <form id="caseForm">
-        <div class="form-group"><label>Case ID</label><input type="number" name="case_id" required></div>
-        <div class="form-group"><label>Consultant ID</label><input type="number" name="consultant_id" required></div>
-        <div class="form-group"><label>IP ID</label><input type="number" name="ip_id" required></div>
-        <div class="form-group"><label>Court ID</label><input type="number" name="court_id" required></div>
-        <div class="form-group"><label>Description</label><input type="text" name="description"></div>
-        <div class="form-group"><label>Status</label><input type="text" name="status"></div>
-        <div class="form-group"><label>Open Date</label><input type="date" name="open_date"></div>
-        <div class="form-group"><label>Close Date</label><input type="date" name="close_date"></div>
+        <div class="form-group">
+          <label>Case ID <span style="color: red;">*</span></label>
+          <input type="number" name="case_id" placeholder="e.g., 401" required>
+        </div>
+        <div class="form-group">
+          <label>Consultant Lawyer ID <span style="color: red;">*</span></label>
+          <input type="number" name="consultant_id" placeholder="e.g., 201" required>
+          <span class="input-help">Lawyer handling this case</span>
+        </div>
+        <div class="form-group">
+          <label>Intellectual Property ID <span style="color: red;">*</span></label>
+          <input type="number" name="ip_id" placeholder="e.g., 101" required>
+          <span class="input-help">IP involved in this case</span>
+        </div>
+        <div class="form-group">
+          <label>Court ID <span style="color: red;">*</span></label>
+          <input type="number" name="court_id" placeholder="e.g., 301" required>
+          <span class="input-help">Court where case is filed</span>
+        </div>
+        <div class="form-group">
+          <label>Case Description</label>
+          <input type="text" name="description" placeholder="Brief description" maxlength="200">
+        </div>
+        <div class="form-group">
+          <label>Case Status</label>
+          <input type="text" name="status" placeholder="Enter current status" maxlength="50">
+        </div>
+        <div class="form-group">
+          <label>Open Date</label>
+          <input type="date" name="open_date">
+          <span class="input-help">Date case was opened</span>
+        </div>
+        <div class="form-group">
+          <label>Close Date</label>
+          <input type="date" name="close_date">
+          <span class="input-help">Leave empty if case is still open</span>
+        </div>
         <div class="form-actions">
-          <button type="submit" class="btn submit">Insert</button>
-          <button type="button" class="btn cancel" id="cancelCaseBtn">Cancel</button>
+          <button type="submit" class="btn submit">✓ Insert Case</button>
+          <button type="button" class="btn cancel" id="cancelCaseBtn">✗ Cancel</button>
         </div>
       </form>
     </div>
@@ -42,23 +72,24 @@
     <hr class="section-divider">
 
     <div class="card">
-      <h2>Delete Case</h2>
-      <p class="help-text">Delete by Case ID. Only deletes if not referenced by other tables.</p>
+      <h2>🗑️ Delete Case</h2>
+      <p class="help-text">Remove a case from the system. This will also delete related records in dependent tables.</p>
+      <p class="input-help" style="color: #c83b3b;">⚠️ Warning: This action cannot be undone!</p>
       <div class="form-group">
-        <label>Case ID</label>
-        <input type="number" id="deleteCaseId">
+        <label>Case ID to Delete</label>
+        <input type="number" id="deleteCaseId" placeholder="Enter case ID">
       </div>
       <div class="form-actions">
-        <button class="btn cancel" id="deleteCaseBtn">Delete</button>
+        <button class="btn cancel" id="deleteCaseBtn">🗑️ Delete Case</button>
       </div>
     </div>
 
     <hr class="section-divider">
 
     <div class="card">
-      <h2>Cases Grouped by Court (Aggregate)</h2>
-      <p class="help-text">Shows how many cases are assigned to each court.</p>
-      <button class="btn submit" id="groupByCourtBtn">Run Query</button>
+      <h2>📊 Court Case Summary</h2>
+      <p class="help-text">Shows all courts with their case counts, including courts with zero cases.</p>
+      <button class="btn submit" id="groupByCourtBtn">📊 Load Court Statistics</button>
       <table class="data-table" id="groupByCourtTable">
         <thead>
           <tr>

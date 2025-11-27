@@ -6,34 +6,55 @@ body {
   }
   
   .sidebar {
-    width: 220px;
+    width: 240px;
     height: 100vh;
-    background: #2d2d2d;
+    background: linear-gradient(180deg, #1e3a5f 0%, #2d2d2d 100%);
     color: #fff;
     position: fixed;
-    padding: 20px;
+    padding: 0;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.1);
   }
   
   .sidebar h2 {
-    margin-top: 0;
-    font-size: 22px;
+    margin: 0;
+    padding: 24px 20px;
+    font-size: 24px;
+    background: rgba(255,255,255,0.05);
+    border-bottom: 2px solid #4a90e2;
+    letter-spacing: 1px;
+    color: #fff;
+  }
+  
+  .menu {
+    padding: 12px 0;
   }
   
   .menu a {
     display: block;
-    padding: 10px 0;
-    color: #ccc;
+    padding: 14px 24px;
+    color: #b8c5d6;
     text-decoration: none;
+    transition: all 0.3s ease;
+    border-left: 4px solid transparent;
+    font-size: 15px;
   }
   
-  .menu a:hover,
-  .menu a.active {
+  .menu a:hover {
+    background: rgba(255,255,255,0.08);
     color: #fff;
-    font-weight: bold;
+    border-left-color: #4a90e2;
+    padding-left: 28px;
+  }
+  
+  .menu a.active {
+    background: rgba(74,144,226,0.2);
+    color: #fff;
+    font-weight: 600;
+    border-left-color: #4a90e2;
   }
   
   .content {
-    margin-left: 240px;
+    margin-left: 260px;
     padding: 20px;
   }
   
@@ -48,6 +69,11 @@ body {
   h1, h2 {
     margin-top: 0;
     color: #222;
+  }
+  
+  h1 {
+    text-align: center;
+    text-decoration: underline;
   }
   
   .data-table {
@@ -115,35 +141,3 @@ body {
     border: 0;
     border-top: 1px solid #ccc;
   }
-  
-  .sidebar {
-    width: 220px;
-    background-color: #333;
-    color: white;
-    height: 100vh; 
-    position: fixed;
-    left: 0;
-    top: 0;
-    padding-top: 20px; 
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-}
-
-.menu a {
-    display: block;
-    padding: 12px 20px;  
-    color: white;
-    text-decoration: none;
-    width: 100%;
-}
-
-.menu a:hover,
-.menu a.active {
-    background-color: #555;
-}
-
-.sidebar h2 {
-    color: #ffcc00;  
-  }
-  
