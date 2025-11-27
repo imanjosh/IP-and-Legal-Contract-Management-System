@@ -24,7 +24,19 @@
       <h2>Join with Consultants</h2>
       <div class="search-grid">
         <div><label>Name</label><input type="text" id="joinName"></div>
-        <div><label>Type</label><input type="text" id="joinType"></div>
+        <div>
+            <label>Type</label>
+            <select id="joinType">
+              <option value="">-- Any Type --</option>
+              <option value="Initial Review">Initial Review</option>
+              <option value="Discussed patent filing">Discussed patent filing</option>
+              <option value="Detailed Assessment">Detailed Assessment</option>
+              <option value="Follow-up">Follow-up</option>
+              <option value="Expert Opinion">Expert Opinion</option>
+              <option value="Full-Day Session">Full-Day Session</option>
+            </select>
+          </div>
+          
         <div><label>Date From</label><input type="date" id="joinDateFrom"></div>
         <div><label>Date To</label><input type="date" id="joinDateTo"></div>
       </div>

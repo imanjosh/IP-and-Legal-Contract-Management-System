@@ -95,15 +95,19 @@ router.post('/consultants/filter', async (req, res) => {
 
 router.get('/consultations/join', async (req, res) => {
     const filters = {
-        name: req.query.name || null,
-        type: req.query.type || null,
-        date_from: req.query.date_from || null,
-        date_to: req.query.date_to || null
+        name: req.query.name && req.query.name.trim() !== "" ? req.query.name.trim() : null,
+        type: req.query.type && req.query.type.trim() !== "" ? req.query.type.trim() : null,
+        date_from: req.query.date_from && req.query.date_from.trim() !== "" ? req.query.date_from.trim() : null,
+        date_to: req.query.date_to && req.query.date_to.trim() !== "" ? req.query.date_to.trim() : null,
     };
+
+    console.log("JOIN FILTERS:", filters);
 
     const result = await appService.joinConsultationsService(filters);
     res.json(result);
 });
+
+
 
 
 router.post('/consultations/aggregate', async (req, res) => {

@@ -28,23 +28,38 @@ function renderTable(rows, tableId) {
   }
   
   async function runJoinQuery() {
-    const name = document.getElementById('joinName').value.trim();
-    const type = document.getElementById('joinType').value.trim();
-    const date_from = document.getElementById('joinDateFrom').value.trim();
-    const date_to = document.getElementById('joinDateTo').value.trim();
-  
-    const filters = { name, type, date_from, date_to };
-    const query = new URLSearchParams(filters).toString();
-  
-    const res = await fetch(`/consultations/join?${query}`);
-    const json = await res.json();
-  
-    if (json.success) {
-      renderTable(json.data, 'joinTable');
-    } else {
-      alert('Error running join query');
+    let name = document.getElementById('joinName').value.trim();
+    let type = document.getElementById('joinType').value.trim();
+    let date_from = document.getElementById('joinDateFrom').value;
+    let date_to = document.getElementById('joinDateTo').value;
+
+    if (!name && !type && !date_from && !date_to) {
+        alert('Please enter at least one search filter.');
+        return;
     }
-  }
+
+    if (name === "") name = null;
+    if (type === "") type = null;
+    if (date_from === "") date_from = null;
+    if (date_to === "") date_to = null;
+
+    const params = new URLSearchParams({
+        name: name === null ? "" : name,
+        type: type === null ? "" : type,
+        date_from: date_from === null ? "" : date_from,
+        date_to: date_to === null ? "" : date_to
+    });
+
+    const res = await fetch(`/consultations/join?${params.toString()}`);
+    const json = await res.json();
+
+    if (json.success) {
+        renderTable(json.data, 'joinTable');
+    } else {
+        alert(json.message || "Error running join query.");
+    }
+}
+
   
   function resetJoinFilters() {
     document.getElementById('joinName').value = '';

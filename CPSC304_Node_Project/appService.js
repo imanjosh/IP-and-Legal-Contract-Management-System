@@ -169,16 +169,61 @@ async function updateConsultant(consultant_id, name, license_number, years_exper
 
 async function filterConsultantsService(filters) {
     return await withOracleDB(async (connection) => {
-        const result = await runDynamicFilter(connection, filters);
-        return {
-            success: true,
-            message: result.rows.length > 0 ? "Results found" : "No matching consultants",
-            data: result.rows
-        };
-    }).catch(() => {
-        return { success: false, message: "Error searching consultants" };
-    });
-}
+      let sql = `
+        SELECT consultant_id, name, license_number, years_experience,
+               specialization, contact_details
+        FROM Consultant_Lawyer
+        WHERE 1=1
+      `;
+  
+      let binds = {};
+      let conditions = []; 
+  
+      const ops = {
+        name: filters.nameOp || "AND",
+        license_number: filters.licenseOp || "AND",
+        min_exp: filters.minExpOp || "AND",
+        max_exp: filters.maxExpOp || "AND",
+        specialization: filters.specializationOp || "AND",
+        contact: filters.contactOp || "AND"
+      };
+  
+      function addCond(key, sqlPart, bindVal) {
+        if (!bindVal && bindVal !== 0) return; 
+        if (conditions.length === 0) {
+          conditions.push(sqlPart.replace(/^(AND|OR)\s/, ""));
+        } else {
+          conditions.push(`${ops[key]} ${sqlPart}`);
+        }
+        binds[key] = bindVal;
+      }
+  
+      addCond("name", "LOWER(name) LIKE :name", filters.name ? `%${filters.name.toLowerCase()}%` : null);
+      addCond("license_number", "license_number = :license_number", filters.license_number || null);
+      addCond("min_exp", "years_experience >= :min_exp", filters.min_exp || null);
+      addCond("max_exp", "years_experience <= :max_exp", filters.max_exp || null);
+      addCond("specialization", "LOWER(specialization) LIKE :specialization", filters.specialization ? `%${filters.specialization.toLowerCase()}%` : null);
+      addCond("contact", "LOWER(contact_details) LIKE :contact", filters.contact ? `%${filters.contact.toLowerCase()}%` : null);
+  
+      if (conditions.length > 0) {
+        sql += " AND (" + conditions.join(" ") + ")";
+      }
+  
+      const result = await connection.execute(sql, binds, {
+        outFormat: oracledb.OUT_FORMAT_OBJECT
+      });
+  
+      return {
+        success: true,
+        message: result.rows.length > 0 ? "Results found" : "No matching consultants",
+        data: result.rows
+      };
+    }).catch(() => ({
+      success: false,
+      message: "Error searching consultants"
+    }));
+  }
+  
 
 async function joinConsultationsService(params) {
     return await withOracleDB(async (connection) => {
@@ -195,9 +240,15 @@ async function joinConsultationsService(params) {
              WHERE 1=1
                AND (:name IS NULL OR LOWER(l.name) LIKE LOWER('%' || :name || '%'))
                AND (:type IS NULL OR c.type = :type)
-               AND (:date_from IS NULL OR c.consultation_date >= :date_from)
-               AND (:date_to IS NULL OR c.consultation_date <= :date_to)`,
-            params
+               AND (:date_from IS NULL OR c.consultation_date >= TO_DATE(:date_from, 'YYYY-MM-DD'))
+               AND (:date_to IS NULL OR c.consultation_date <= TO_DATE(:date_to, 'YYYY-MM-DD'))`,
+            {
+                name: params.name,
+                type: params.type,
+                date_from: params.date_from,
+                date_to: params.date_to
+            },
+            { outFormat: oracledb.OUT_FORMAT_OBJECT }
         );
         return {
             success: true,

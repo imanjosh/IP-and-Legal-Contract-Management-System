@@ -117,15 +117,21 @@ function renderAboveAvgTable(rows) {
 // -------------------------
 // Load all consultants (with optional filters)
 async function loadConsultants(filters = {}) {
-  const query = new URLSearchParams(filters).toString();
-  const res = await fetch(`/consultants/filter?${query}`);
-  const json = await res.json();
-  if (json.success) {
-    renderTable(json.data, 'consultantsTable');
-  } else {
-    alert('Error loading consultants');
+    const res = await fetch("/consultants/filter", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(filters)
+    });
+  
+    const json = await res.json();
+  
+    if (json.success) {
+      renderTable(json.data, 'consultantsTable');
+    } else {
+      alert(json.message || "Error loading consultants");
+    }
   }
-}
+  
 
 // -------------------------
 // Update consultant
@@ -201,43 +207,41 @@ async function loadAboveAverage() {
 // Event listeners
 document.getElementById('refreshBtn').addEventListener('click', () => loadConsultants());
 
-// Modified filter logic with AND/OR connectors
 document.getElementById('filterBtn').addEventListener('click', async () => {
     const filters = {
-        name: document.getElementById("filterName").value,
-        nameOp: "AND",
-      
-        license_number: document.getElementById("filterLicense").value,
-        licenseOp: document.getElementById("conn2").value,
-      
-        min_exp: document.getElementById("filterMinExp").value,
-        minExpOp: document.getElementById("conn3").value,
-      
-        max_exp: document.getElementById("filterMaxExp").value,
-        maxExpOp: document.getElementById("conn4").value,
-      
-        specialization: document.getElementById("filterSpec").value,
-        specializationOp: document.getElementById("conn5").value,
-      
-        contact: document.getElementById("filterContact").value,
-        contactOp: "AND"
-      };
-      
-      
+      name: document.getElementById("filterName").value.trim() || null,
+      nameOp: "AND",
+  
+      license_number: document.getElementById("filterLicense").value.trim() || null,
+      licenseOp: document.getElementById("conn2").value,
+  
+      min_exp: document.getElementById("filterMinExp").value.trim() || null,
+      minExpOp: document.getElementById("conn3").value,
+  
+      max_exp: document.getElementById("filterMaxExp").value.trim() || null,
+      maxExpOp: document.getElementById("conn4").value,
+  
+      specialization: document.getElementById("filterSpec").value.trim() || null,
+      specializationOp: document.getElementById("conn5").value,
+  
+      contact: document.getElementById("filterContact").value.trim() || null,
+      contactOp: "AND"
+    };
   
     const res = await fetch("/consultants/filter", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(filters)
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(filters)
     });
   
     const json = await res.json();
     if (json.success) {
-        renderTable(json.data, 'consultantsTable');
+      renderTable(json.data, 'consultantsTable');
     } else {
-        alert("Filter failed");
+      alert(json.message || "Filter failed");
     }
   });
+  
   
 
 document.getElementById('resetBtn').addEventListener('click', () => {
