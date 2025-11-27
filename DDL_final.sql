@@ -107,7 +107,6 @@ CREATE TABLE Consultant_Lawyer (
     specialization VARCHAR(255),
     contact_details VARCHAR(255),
     PRIMARY KEY (consultant_id),
-    -- ON DELETE SET NULL: A consultant's record should be kept even if their seniority level is removed
     FOREIGN KEY (years_experience) REFERENCES Seniority(years_experience) ON DELETE SET NULL,
     UNIQUE (license_number),
     UNIQUE (name, contact_details)
@@ -129,7 +128,6 @@ CREATE TABLE IP_Validation (
     value DECIMAL(15, 2),
     methodology CLOB,
     PRIMARY KEY (ip_id, valuation_id),
-    -- ON DELETE CASCADE: An IP validation record is meaningless without the core IP record it belongs to
     FOREIGN KEY (ip_id) REFERENCES IP_merge_has_an(ip_id) ON DELETE CASCADE
 );
 
@@ -144,7 +142,6 @@ CREATE TABLE Patent (
     ip_id INTEGER,
     patent_number VARCHAR(100) NOT NULL,
     PRIMARY KEY (ip_id),
-    -- ON DELETE CASCADE: A Patent is a specific type of IP. If the main IP record is deleted, this must be deleted too
     FOREIGN KEY (ip_id) REFERENCES IP_merge_has_an(ip_id) ON DELETE CASCADE,
     UNIQUE (patent_number)
 );
@@ -160,7 +157,6 @@ CREATE TABLE Trademark (
     ip_id INTEGER,
     class VARCHAR(255),
     PRIMARY KEY (ip_id),
-    -- ON DELETE CASCADE: A Trademark is a specific type of IP. If the main IP record is deleted, this must be deleted too
     FOREIGN KEY (ip_id) REFERENCES IP_merge_has_an(ip_id) ON DELETE CASCADE
 );
 
@@ -175,7 +171,6 @@ CREATE TABLE Copyright (
     ip_id INTEGER,
     registration_date DATE,
     PRIMARY KEY (ip_id),
-    -- ON DELETE CASCADE: A Copyright is a specific type of IP. If the main IP record is deleted, this must be deleted too
     FOREIGN KEY (ip_id) REFERENCES IP_merge_has_an(ip_id) ON DELETE CASCADE
 );
 
@@ -190,7 +185,6 @@ CREATE TABLE Trade_Secret (
     ip_id INTEGER,
     secrecy_level VARCHAR(100),
     PRIMARY KEY (ip_id),
-    -- ON DELETE CASCADE: A Trade_Secret is a specific type of IP. If the main IP record is deleted, this must be deleted too
     FOREIGN KEY (ip_id) REFERENCES IP_merge_has_an(ip_id) ON DELETE CASCADE
 );
 
@@ -220,7 +214,6 @@ CREATE TABLE Court (
     name VARCHAR(255),
     jurisdiction VARCHAR(255),
     PRIMARY KEY (court_id),
-    -- ON DELETE SET NULL: A court's record should be kept even if its jurisdiction is removed from the system
     FOREIGN KEY (jurisdiction) REFERENCES Jurisdiction(jurisdiction) ON DELETE SET NULL
 );
 
@@ -251,7 +244,6 @@ CREATE TABLE Legal_Document (
     type VARCHAR(100),
     issue_date DATE,
     PRIMARY KEY (document_id),
-    -- ON DELETE SET NULL: A legal document record is important and should be kept even if its type/issue date record is deleted
     FOREIGN KEY (type, issue_date) REFERENCES DocTypeIssue(type, issue_date) ON DELETE SET NULL
 );
 
@@ -280,7 +272,6 @@ CREATE TABLE ConsultationType (
     type VARCHAR(100),
     duration_minutes INTEGER,
     PRIMARY KEY (type),
-    -- ON DELETE SET NULL: The consultation type should be kept even if its associated duration/fee is deleted
     FOREIGN KEY (duration_minutes) REFERENCES DurationFee(duration_minutes) ON DELETE SET NULL
 );
 
@@ -301,7 +292,6 @@ CREATE TABLE ConsultationBase (
     type VARCHAR(100),
     notes CLOB,
     PRIMARY KEY (consultation_id),
-    -- ON DELETE SET NULL: Historical consultation records are vital and must be kept, even if a client or consultant is deleted
     FOREIGN KEY (client_id) REFERENCES Client(client_id) ON DELETE SET NULL,
     FOREIGN KEY (consultant_id) REFERENCES Consultant_Lawyer(consultant_id) ON DELETE SET NULL,
     FOREIGN KEY (type) REFERENCES ConsultationType(type) ON DELETE SET NULL
@@ -313,7 +303,8 @@ INSERT INTO ConsultationBase VALUES (502, 2, 202, DATE '2023-02-14', 'Detailed A
 INSERT INTO ConsultationBase VALUES (503, 3, 203, DATE '2023-03-05', 'Follow-up', 'Reviewed education platform IP');
 INSERT INTO ConsultationBase VALUES (504, 4, 204, DATE '2023-04-12', 'Expert Opinion', 'Trademark dispute analysis');
 INSERT INTO ConsultationBase VALUES (505, 5, 205, DATE '2023-05-20', 'Full-Day Session', 'Copyright protection strategy');
--- Consultant 201 (Laura King) gets consultations in all types
+
+
 INSERT INTO ConsultationBase VALUES (506, 1, 201, DATE '2023-06-01', 'Initial Review', 'Second review of patent filing');
 INSERT INTO ConsultationBase VALUES (507, 1, 201, DATE '2023-06-15', 'Detailed Assessment', 'Deep dive into patent scope');
 INSERT INTO ConsultationBase VALUES (508, 1, 201, DATE '2023-07-01', 'Follow-up', 'Checked progress on IP filing');
@@ -332,11 +323,9 @@ CREATE TABLE "Case" (
     open_date DATE,
     close_date DATE,
     PRIMARY KEY (case_id),
-    -- NO ACTION (Default): Prevent deleting a consultant if they are assigned to a case, ensuring accountability
+ 
     FOREIGN KEY (consultant_id) REFERENCES Consultant_Lawyer(consultant_id),
-    -- NO ACTION (Default): A case is fundamentally tied to an IP record, so prevent IP deletion if it's involved in a case
     FOREIGN KEY (ip_id) REFERENCES IP_merge_has_an(ip_id),
-    -- NO ACTION (Default): Prevent deleting a court if it has cases assigned to it, preserving legal records
     FOREIGN KEY (court_id) REFERENCES Court(court_id),
     UNIQUE (ip_id)
 );
@@ -354,7 +343,6 @@ CREATE TABLE Uses (
     case_id INTEGER,
     document_id INTEGER,
     PRIMARY KEY (case_id, document_id),
-    -- ON DELETE CASCADE: The 'Uses' record is a relationship. If the case or document is deleted, the relationship is meaningless
     FOREIGN KEY (case_id) REFERENCES "Case"(case_id) ON DELETE CASCADE,
     FOREIGN KEY (document_id) REFERENCES Legal_Document(document_id) ON DELETE CASCADE
 );
@@ -365,3 +353,9 @@ INSERT INTO Uses VALUES (602, 402);
 INSERT INTO Uses VALUES (603, 403);
 INSERT INTO Uses VALUES (604, 404);
 INSERT INTO Uses VALUES (605, 405);
+
+INSERT INTO ConsultationBase VALUES (511, 1, 202, DATE '2023-09-01', 'Initial Review', 'Test');
+INSERT INTO ConsultationBase VALUES (512, 1, 202, DATE '2023-09-02', 'Detailed Assessment', 'Test');
+INSERT INTO ConsultationBase VALUES (513, 1, 202, DATE '2023-09-03', 'Follow-up', 'Test');
+INSERT INTO ConsultationBase VALUES (514, 1, 202, DATE '2023-09-04', 'Expert Opinion', 'Test');
+INSERT INTO ConsultationBase VALUES (515, 1, 202, DATE '2023-09-05', 'Full-Day Session', 'Test');
