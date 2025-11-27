@@ -2,39 +2,55 @@
 
 // Utility: render rows into a table
 function renderTable(rows, tableId) {
-  const tbody = document.querySelector(`#${tableId} tbody`);
-  tbody.innerHTML = '';
-  rows.forEach(row => {
-    const tr = document.createElement('tr');
-    Object.values(row).forEach(val => {
-      const td = document.createElement('td');
-      td.textContent = val;
-      tr.appendChild(td);
+    const tbody = document.querySelector(`#${tableId} tbody`);
+    tbody.innerHTML = '';
+  
+    rows.forEach(row => {
+      const tr = document.createElement('tr');
+  
+      Object.values(row).forEach(val => {
+        const td = document.createElement('td');
+  
+        if (typeof val === "string" && /\d{4}-\d{2}-\d{2}/.test(val)) {
+          td.textContent = val.substring(0, 10);
+        } else {
+          td.textContent = val;
+        }
+  
+        tr.appendChild(td);
+      });
+  
+      tbody.appendChild(tr);
     });
-    tbody.appendChild(tr);
-  });
-}
+  }
+  
 
 // -------------------------
 // Run Join Query
 async function runJoinQuery() {
-  const filters = {
-    name: document.getElementById('joinName').value,
-    type: document.getElementById('joinType').value,
-    date_from: document.getElementById('joinDateFrom').value,
-    date_to: document.getElementById('joinDateTo').value
-  };
-
-  const query = new URLSearchParams(filters).toString();
-  const res = await fetch(`/consultations/join?${query}`);
-  const json = await res.json();
-
-  if (json.success) {
-    renderTable(json.data, 'joinTable');
-  } else {
-    alert('Error running join query');
+    const name = document.getElementById('joinName').value.trim();
+    const type = document.getElementById('joinType').value.trim();
+    const date_from = document.getElementById('joinDateFrom').value.trim();
+    const date_to = document.getElementById('joinDateTo').value.trim();
+  
+    if (!name && !type && !date_from && !date_to) {
+      alert('Please enter at least one filter value before searching.');
+      return;
+    }
+  
+    const filters = { name, type, date_from, date_to };
+  
+    const query = new URLSearchParams(filters).toString();
+    const res = await fetch(`/consultations/join?${query}`);
+    const json = await res.json();
+  
+    if (json.success) {
+      renderTable(json.data, 'joinTable');
+    } else {
+      alert('Error running join query');
+    }
   }
-}
+  
 
 // -------------------------
 // Reset Join Filters
@@ -48,17 +64,25 @@ function resetJoinFilters() {
 
 // -------------------------
 // Run Aggregate Query
-async function runAggregateQuery() {
-  const minCount = document.getElementById('aggMinCount').value || 1;
-  const res = await fetch(`/consultations/aggregate?min_count=${minCount}`);
-  const json = await res.json();
 
-  if (json.success) {
-    renderTable(json.data, 'aggTable');
-  } else {
-    alert('Error running aggregate query');
+async function runAggregateQuery() {
+    const minCount = document.getElementById('aggMinCount').value || 0;
+  
+    const res = await fetch('/consultations/aggregate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ min_count: Number(minCount) })
+    });
+  
+    const json = await res.json();
+  
+    if (json.success) {
+      renderTable(json.data, 'aggTable');
+    } else {
+      alert('Error running aggregate query');
+    }
   }
-}
+  
 
 // -------------------------
 // Event listeners

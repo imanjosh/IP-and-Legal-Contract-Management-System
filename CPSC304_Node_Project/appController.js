@@ -113,28 +113,16 @@ router.put('/consultants/:consultant_id', async (req, res) => {
 });
 
 
-router.get('/consultants/filter', async (req, res) => {
+router.post('/consultants/filter', async (req, res) => {
     try {
-        const filters = {
-            name: req.query.name || null,
-            license_number: req.query.license_number || null,
-            min_exp: req.query.min_exp || null,
-            max_exp: req.query.max_exp || null,
-            specialization: req.query.specialization || null,
-            contact: req.query.contact || null
-        };
-
-        const rows = await appService.filterConsultantsService(filters);
+        const rows = await appService.filterConsultantsService(req.body);
         res.json({ success: true, data: rows });
-
     } catch (err) {
         console.error(err);
-        res.status(500).json({
-            success: false,
-            message: "Internal error while filtering consultants."
-        });
+        res.status(500).json({ success: false, message: "Filter failed" });
     }
 });
+
 
 router.get('/consultations/join', async (req, res) => {
     try {
@@ -158,24 +146,18 @@ router.get('/consultations/join', async (req, res) => {
     }
 });
 
-router.get('/consultations/aggregate', async (req, res) => {
+router.post('/consultations/aggregate', async (req, res) => {
     try {
-        const minCount = parseInt(req.query.min_count, 10) || 0;
-
         const rows = await appService.aggregateConsultationsService({
-            min_count: minCount
+            min_count: req.body.min_count
         });
-
         res.json({ success: true, data: rows });
-
     } catch (err) {
         console.error(err);
-        res.status(500).json({
-            success: false,
-            message: "Internal error while aggregating."
-        });
+        res.status(500).json({ success: false, message: "Aggregate failed" });
     }
 });
+
 
 router.get('/consultants/division', async (req, res) => {
     try {

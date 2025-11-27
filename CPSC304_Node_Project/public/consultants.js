@@ -1,7 +1,7 @@
 // consultants.js
 
 // Utility: render rows into a table
-function renderTable(rows, tableId) {
+/*function renderTable(rows, tableId) {
   const tbody = document.querySelector(`#${tableId} tbody`);
   tbody.innerHTML = '';
   if (!rows || rows.length === 0) {
@@ -22,7 +22,33 @@ function renderTable(rows, tableId) {
     });
     tbody.appendChild(tr);
   });
-}
+} */
+
+  function renderTable(rows, tableId) {
+    const tbody = document.querySelector(`#${tableId} tbody`);
+    tbody.innerHTML = '';
+  
+    rows.forEach(row => {
+      const tr = document.createElement('tr');
+  
+      Object.values(row).forEach(val => {
+        const td = document.createElement('td');
+  
+       
+        if (typeof val === "string" && val.includes("T") && val.includes("Z")) {
+          td.textContent = val.split("T")[0];  
+        } else {
+          td.textContent = val;
+        }
+  
+        tr.appendChild(td);
+      });
+  
+      tbody.appendChild(tr);
+    });
+  }
+  
+  
 
 function renderProjectionTable(rows) {
   const thead = document.querySelector('#projectionTable thead');
@@ -176,23 +202,43 @@ async function loadAboveAverage() {
 document.getElementById('refreshBtn').addEventListener('click', () => loadConsultants());
 
 // Modified filter logic with AND/OR connectors
-document.getElementById('filterBtn').addEventListener('click', () => {
-  const filters = {
-    name: document.getElementById('filterName').value,
-    license_number: document.getElementById('filterLicense').value,
-    min_exp: document.getElementById('filterMinExp').value,
-    max_exp: document.getElementById('filterMaxExp').value,
-    specialization: document.getElementById('filterSpec').value,
-    contact: document.getElementById('filterContact').value,
-
-    // connectors between clauses
-    conn2: document.getElementById('conn2')?.value || 'AND',
-    conn3: document.getElementById('conn3')?.value || 'AND',
-    conn4: document.getElementById('conn4')?.value || 'AND',
-    conn5: document.getElementById('conn5')?.value || 'AND'
-  };
-  loadConsultants(filters);
-});
+document.getElementById('filterBtn').addEventListener('click', async () => {
+    const filters = {
+        name: document.getElementById("filterName").value,
+        nameOp: "AND",
+      
+        license_number: document.getElementById("filterLicense").value,
+        licenseOp: document.getElementById("conn2").value,
+      
+        min_exp: document.getElementById("filterMinExp").value,
+        minExpOp: document.getElementById("conn3").value,
+      
+        max_exp: document.getElementById("filterMaxExp").value,
+        maxExpOp: document.getElementById("conn4").value,
+      
+        specialization: document.getElementById("filterSpec").value,
+        specializationOp: document.getElementById("conn5").value,
+      
+        contact: document.getElementById("filterContact").value,
+        contactOp: "AND"
+      };
+      
+      
+  
+    const res = await fetch("/consultants/filter", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(filters)
+    });
+  
+    const json = await res.json();
+    if (json.success) {
+        renderTable(json.data, 'consultantsTable');
+    } else {
+        alert("Filter failed");
+    }
+  });
+  
 
 document.getElementById('resetBtn').addEventListener('click', () => {
   ['filterName','filterLicense','filterMinExp','filterMaxExp','filterSpec','filterContact']

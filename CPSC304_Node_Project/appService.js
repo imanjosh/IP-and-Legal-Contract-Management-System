@@ -171,7 +171,7 @@ async function updateConsultant(consultant_id, name, license_number, years_exper
     });
 }
 
-async function filterConsultantsService(filters) {
+/*async function filterConsultantsService(filters) {
     return await withOracleDB(async (connection) => {
 
         const sql = `
@@ -199,7 +199,64 @@ async function filterConsultantsService(filters) {
         const result = await connection.execute(sql, binds, { outFormat: oracledb.OUT_FORMAT_OBJECT });
         return result.rows;
     });
-}
+} */
+
+    async function filterConsultantsService(filters) {
+        return await withOracleDB(async (connection) => {
+          let sql = `
+            SELECT consultant_id, name, license_number, years_experience,
+                   specialization, contact_details
+            FROM Consultant_Lawyer
+            WHERE 1=1
+          `;
+      
+          let binds = {};
+          let whereClauses = [];
+      
+          if (filters.name) {
+            whereClauses.push(`${filters.nameOp} LOWER(name) LIKE :name`);
+            binds.name = `%${filters.name.toLowerCase()}%`;
+          }
+      
+          if (filters.license_number) {
+            whereClauses.push(`${filters.licenseOp} license_number = :license_number`);
+            binds.license_number = filters.license_number;
+          }
+      
+          if (filters.min_exp) {
+            whereClauses.push(`${filters.minExpOp} years_experience >= :min_exp`);
+            binds.min_exp = filters.min_exp;
+          }
+      
+          if (filters.max_exp) {
+            whereClauses.push(`${filters.maxExpOp} years_experience <= :max_exp`);
+            binds.max_exp = filters.max_exp;
+          }
+      
+          if (filters.specialization) {
+            whereClauses.push(`${filters.specializationOp} LOWER(specialization) LIKE :spec`);
+            binds.spec = `%${filters.specialization.toLowerCase()}%`;
+          }
+      
+          if (filters.contact) {
+            whereClauses.push(`${filters.contactOp} LOWER(contact_details) LIKE :contact`);
+            binds.contact = `%${filters.contact.toLowerCase()}%`;
+          }
+      
+          if (whereClauses.length > 0) {
+            sql += " " + whereClauses.join(" ");
+          }
+      
+          const result = await connection.execute(sql, binds, {
+            outFormat: oracledb.OUT_FORMAT_OBJECT
+          });
+      
+          return result.rows;
+        });
+      }
+      
+    
+    
 
 async function joinConsultationsService(params) {
     return await withOracleDB(async (connection) => {
@@ -228,22 +285,29 @@ async function joinConsultationsService(params) {
 
 async function aggregateConsultationsService(params) {
     return await withOracleDB(async (connection) => {
-        const result = await connection.execute(
-            `SELECT 
-                c.consultant_id,
-                l.name AS consultant_name,
-                COUNT(*) AS num_consultations
-             FROM ConsultationBase c
-             JOIN Consultant_Lawyer l
-                ON c.consultant_id = l.consultant_id
-             GROUP BY c.consultant_id, l.name
-             HAVING COUNT(*) > :min_count`,
-            params
-        );
+        const sql = `
+            SELECT 
+                l.consultant_id AS "Consultant ID",
+                l.name AS "Consultant Name",
+                COUNT(c.consultation_id) AS "Number of Consultations"
+            FROM Consultant_Lawyer l
+            JOIN ConsultationBase c
+                ON l.consultant_id = c.consultant_id
+            GROUP BY 
+                l.consultant_id,
+                l.name
+            HAVING COUNT(c.consultation_id) >= :min_count
+            ORDER BY COUNT(c.consultation_id) DESC
+        `;
+
+        const result = await connection.execute(sql, params, {
+            outFormat: oracledb.OUT_FORMAT_OBJECT
+        });
 
         return result.rows;
     });
 }
+
 
 async function divisionConsultantsService() {
     return await withOracleDB(async (connection) => {
