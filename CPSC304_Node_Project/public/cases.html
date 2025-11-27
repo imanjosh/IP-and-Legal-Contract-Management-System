@@ -6,24 +6,25 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+
   <aside class="sidebar">
     <h2>IP Legal DB</h2>
     <nav class="menu">
-      <a href="index.html">🏠 Home</a>
-      <a href="consultants.html">⚖️ Consultants</a>
-      <a href="cases.html" class="active">📁 Cases</a>
-      <a href="consultations.html">📅 Consultations</a>
+      <a href="index.html"> Home</a>
+      <a href="consultants.html"> Consultants</a>
+      <a href="cases.html" class="active"> Cases</a>
+      <a href="consultations.html"> Consultations</a>
     </nav>
   </aside>
 
   <main class="content">
     <h1>Cases</h1>
 
-    <!-- Existing Cases -->
     <div class="card">
-      <h2>Existing Cases</h2>
+      <h2>All Cases</h2>
+      <p class="help-text">Displays all case records stored in the system.</p>
       <div class="form-actions">
-        <button class="btn submit" id="refreshCasesBtn">Refresh Table</button>
+        <button class="btn submit" id="refreshCasesBtn">Refresh</button>
       </div>
       <table class="data-table" id="casesTable">
         <thead>
@@ -38,20 +39,20 @@
             <th>Close Date</th>
           </tr>
         </thead>
-        <tbody>
-          <!-- populated dynamically -->
-        </tbody>
+        <tbody></tbody>
       </table>
     </div>
 
-    <!-- Insert Case -->
+    <hr class="section-divider">
+
     <div class="card form-card">
       <h2>Insert Case</h2>
+      <p class="help-text">Insert a new case. Ensure IDs exist before inserting.</p>
       <form id="caseForm">
-        <div class="form-group"><label>Case ID</label><input type="number" name="case_id"></div>
-        <div class="form-group"><label>Consultant ID</label><input type="number" name="consultant_id"></div>
-        <div class="form-group"><label>IP ID</label><input type="number" name="ip_id"></div>
-        <div class="form-group"><label>Court ID</label><input type="number" name="court_id"></div>
+        <div class="form-group"><label>Case ID</label><input type="number" name="case_id" required></div>
+        <div class="form-group"><label>Consultant ID</label><input type="number" name="consultant_id" required></div>
+        <div class="form-group"><label>IP ID</label><input type="number" name="ip_id" required></div>
+        <div class="form-group"><label>Court ID</label><input type="number" name="court_id" required></div>
         <div class="form-group"><label>Description</label><input type="text" name="description"></div>
         <div class="form-group"><label>Status</label><input type="text" name="status"></div>
         <div class="form-group"><label>Open Date</label><input type="date" name="open_date"></div>
@@ -63,9 +64,11 @@
       </form>
     </div>
 
-    <!-- Delete Case -->
+    <hr class="section-divider">
+
     <div class="card">
       <h2>Delete Case</h2>
+      <p class="help-text">Delete by Case ID. Only deletes if not referenced by other tables.</p>
       <div class="form-group">
         <label>Case ID</label>
         <input type="number" id="deleteCaseId">
@@ -75,22 +78,22 @@
       </div>
     </div>
 
-    <!-- Group By Court -->
+    <hr class="section-divider">
+
     <div class="card">
-      <h2>Cases Grouped by Court</h2>
-      <button class="btn submit" id="groupByCourtBtn">Run Group By Query</button>
+      <h2>Cases Grouped by Court (Aggregate)</h2>
+      <p class="help-text">Shows how many cases are assigned to each court.</p>
+      <button class="btn submit" id="groupByCourtBtn">Run Query</button>
       <table class="data-table" id="groupByCourtTable">
         <thead>
           <tr>
             <th>Court ID</th>
             <th>Court Name</th>
             <th>Jurisdiction</th>
-            <th>Number of Cases</th>
+            <th># Cases</th>
           </tr>
         </thead>
-        <tbody>
-          <!-- populated dynamically -->
-        </tbody>
+        <tbody></tbody>
       </table>
     </div>
 

@@ -6,22 +6,25 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+
   <aside class="sidebar">
     <h2>IP Legal DB</h2>
     <nav class="menu">
-      <a href="index.html">🏠 Home</a>
-      <a href="consultants.html">⚖️ Consultants</a>
-      <a href="cases.html" class="active">📁 Cases</a>
-      <a href="consultations.html">📅 Consultations</a>
+      <a href="index.html"> Home</a>
+      <a href="consultants.html" class="active"> Consultants</a>
+      <a href="cases.html"> Cases</a>
+      <a href="consultations.html"> Consultations</a>
     </nav>
   </aside>
 
   <main class="content">
     <h1>Consultants</h1>
+
+   
     <div class="card">
-      <h2>Existing Consultants</h2>
+      <h2>All Consultants</h2>
       <div class="form-actions">
-        <button class="btn submit" id="refreshBtn">Refresh Table</button>
+        <button class="btn submit" id="refreshBtn">Refresh</button>
       </div>
       <table class="data-table" id="consultantsTable">
         <thead>
@@ -29,47 +32,39 @@
             <th>ID</th>
             <th>Name</th>
             <th>License Number</th>
-            <th>Years Experience</th>
+            <th>Years Exp.</th>
             <th>Specialization</th>
             <th>Contact</th>
           </tr>
         </thead>
-        <tbody>
-          <!-- populated dynamically -->
-        </tbody>
+        <tbody></tbody>
       </table>
     </div>
 
-    <div class="card search-card">
-      <h2>Filter Consultants</h2>
-      <div class="search-grid">
 
+   
+    <div class="card search-card">
+      <h2>Search & Filter (Selection Query)</h2>
+      <p class="help-text">Use AND/OR to combine filters. Partial match allowed in Name, Spec & Contact.</p>
+
+      <div class="search-grid">
+        
         <div>
           <label>Name</label>
-          <input type="text" id="filterName">
+          <input type="text" id="filterName" placeholder="e.g. Laura">
         </div>
 
-        <div>
-          <select id="conn2">
-            <option value="AND">AND</option>
-            <option value="OR">OR</option>
-          </select>
-        </div>
+        <div><select id="conn2"><option>AND</option><option>OR</option></select></div>
 
         <div>
           <label>License #</label>
-          <input type="text" id="filterLicense">
+          <input type="text" id="filterLicense" placeholder="Exact match">
         </div>
 
-        <div>
-          <select id="conn3">
-            <option value="AND">AND</option>
-            <option value="OR">OR</option>
-          </select>
-        </div>
+        <div><select id="conn3"><option>AND</option><option>OR</option></select></div>
 
         <div>
-          <label>Years Experience</label>
+          <label>Experience Range</label>
           <div class="range-inline">
             <input type="number" id="filterMinExp" placeholder="Min">
             <span>to</span>
@@ -77,33 +72,24 @@
           </div>
         </div>
 
-        <div>
-          <select id="conn4">
-            <option value="AND">AND</option>
-            <option value="OR">OR</option>
-          </select>
-        </div>
+        <div><select id="conn4"><option>AND</option><option>OR</option></select></div>
 
         <div>
           <label>Specialization</label>
-          <input type="text" id="filterSpec">
+          <input type="text" id="filterSpec" placeholder="e.g. Patent Law">
         </div>
 
-        <div>
-          <select id="conn5">
-            <option value="AND">AND</option>
-            <option value="OR">OR</option>
-          </select>
-        </div>
+        <div><select id="conn5"><option>AND</option><option>OR</option></select></div>
 
         <div>
           <label>Contact</label>
-          <input type="text" id="filterContact">
+          <input type="text" id="filterContact" placeholder="Email contains…">
         </div>
 
       </div>
+
       <div class="form-actions">
-        <button class="btn submit" id="filterBtn">Filter</button>
+        <button class="btn submit" id="filterBtn">Apply Filters</button>
         <button class="btn cancel" id="resetBtn">Clear</button>
       </div>
     </div>
@@ -112,90 +98,46 @@
 
     <div class="card form-card">
       <h2>Update Consultant</h2>
+      <p class="help-text">Enter ID, then only fill fields you want to update.</p>
+
       <form id="consultantForm">
-        <div class="form-group"><label>ID</label><input type="number" name="consultant_id"></div>
+        <div class="form-group"><label>ID</label><input type="number" name="consultant_id" required></div>
         <div class="form-group"><label>Name</label><input type="text" name="name"></div>
         <div class="form-group"><label>License Number</label><input type="text" name="license_number"></div>
-        <div class="form-group"><label>Years Experience</label>
+
+        <div class="form-group">
+          <label>Years Exp.</label>
           <select name="years_experience" id="yearsExperience" class="form-control">
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-            <option value="5">5</option>
-            <option value="6">6</option>
-            <option value="7">7</option>
-            <option value="8">8</option>
-            <option value="9">9</option>
+            <option value="">--Select--</option>
+            <option value="1">1</option><option value="2">2</option><option value="3">3</option>
+            <option value="4">4</option><option value="5">5</option><option value="6">6</option>
+            <option value="7">7</option><option value="8">8</option><option value="9">9</option>
             <option value="10">10</option>
           </select>
         </div>
 
         <div class="form-group"><label>Specialization</label><input type="text" name="specialization"></div>
         <div class="form-group"><label>Contact</label><input type="email" name="contact_details"></div>
+
         <div class="form-actions">
           <button type="submit" class="btn submit">Update</button>
-          <button type="button" class="btn cancel"  id="cancelBtn">Cancel</button>
+          <button type="button" class="btn cancel" id="cancelBtn">Cancel</button>
         </div>
       </form>
     </div>
 
+
+   
     <div class="card">
-      <h2>Consultants who have consultations in all types.</h2><h3>(Division Query)</h3>
-      <button class="btn submit" id="divisionBtn">Show Division Results</button>
+      <h2>Division Query</h2>
+      <p class="help-text">Consultants who handled ALL consultation types.</p>
+      <button class="btn submit" id="divisionBtn">Show</button>
+
       <table class="data-table" id="divisionTable">
-        <thead>
-          <tr><th>ID</th><th>Name</th></tr>
-        </thead>
-        <tbody>
-          <!-- division results -->
-        </tbody>
+        <thead><tr><th>ID</th><th>Name</th></tr></thead>
+        <tbody></tbody>
       </table>
     </div>
-
-    
-    <div class="card">
-      <h2>Projection of Consultants</h2>
-      <div class="form-group">
-        <label>Attributes (comma separated)</label>
-        <input type="text" id="projAttributes" placeholder="e.g. name,specialization">
-      </div>
-      <div class="form-actions">
-        <button class="btn submit" id="projBtn">Run Projection Query</button>
-      </div>
-      <table class="data-table" id="projectionTable">
-        <thead>
-          <tr>
-            <!-- Columns will depend on attributes entered -->
-          </tr>
-        </thead>
-        <tbody>
-          <!-- populated dynamically -->
-        </tbody>
-      </table>
-    </div>
-
-
-    <div class="card">
-      <h2>Consultants Above Average Consultations</h2>
-      <div class="form-actions">
-        <button class="btn submit" id="aboveAvgBtn">Run Above Average Query</button>
-      </div>
-      <table class="data-table" id="aboveAvgTable">
-        <thead>
-          <tr>
-            <th>Consultant ID</th>
-            <th>Name</th>
-            <th>Specialization</th>
-            <th>Number of Consultations</th>
-          </tr>
-        </thead>
-        <tbody>
-          <!-- populated dynamically -->
-        </tbody>
-      </table>
-    </div>
-
 
   </main>
 
