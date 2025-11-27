@@ -68,110 +68,58 @@ router.get('/count-demotable', async (req, res) => {
 
 router.put('/consultants/:consultant_id', async (req, res) => {
     const consultant_id = req.params.consultant_id;
+    const body = req.body;
 
-    const {
-        name,
-        license_number,
-        years_experience,
-        specialization,
-        contact_details
-    } = req.body;
+    const result = await appService.updateConsultant(
+        consultant_id,
+        body.name,
+        body.license_number,
+        body.years_experience,
+        body.specialization,
+        body.contact_details
+    );
 
-    if (!name || !license_number || !years_experience || !specialization || !contact_details) {
-        return res.status(400).json({
-            success: false,
-            message: "Missing required fields."
-        });
+    if (!result.success) {
+        return res.status(404).json(result);
     }
 
-    try {
-        const updated = await appService.updateConsultant(
-            consultant_id,
-            name,
-            license_number,
-            years_experience,
-            specialization,
-            contact_details
-        );
-
-        if (updated) {
-            res.json({ success: true, message: "Consultant updated successfully." });
-        } else {
-            res.status(404).json({
-                success: false,
-                message: "Consultant not found."
-            });
-        }
-
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({
-            success: false,
-            message: "Internal server error while updating consultant."
-        });
-    }
+    res.json(result);
 });
 
 
 router.post('/consultants/filter', async (req, res) => {
-    try {
-        const rows = await appService.filterConsultantsService(req.body);
-        res.json({ success: true, data: rows });
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ success: false, message: "Filter failed" });
-    }
+    const result = await appService.filterConsultantsService(req.body);
+    res.json(result);
 });
 
 
 router.get('/consultations/join', async (req, res) => {
-    try {
-        const filters = {
-            name: req.query.name || null,
-            type: req.query.type || null,
-            date_from: req.query.date_from || null,
-            date_to: req.query.date_to || null
-        };
+    const filters = {
+        name: req.query.name || null,
+        type: req.query.type || null,
+        date_from: req.query.date_from || null,
+        date_to: req.query.date_to || null
+    };
 
-        const rows = await appService.joinConsultationsService(filters);
-
-        res.json({ success: true, data: rows });
-
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({
-            success: false,
-            message: "Internal error while executing join query."
-        });
-    }
+    const result = await appService.joinConsultationsService(filters);
+    res.json(result);
 });
 
+
 router.post('/consultations/aggregate', async (req, res) => {
-    try {
-        const rows = await appService.aggregateConsultationsService({
-            min_count: req.body.min_count
-        });
-        res.json({ success: true, data: rows });
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ success: false, message: "Aggregate failed" });
-    }
+    const result = await appService.aggregateConsultationsService({
+        min_count: req.body.min_count
+    });
+
+    res.json(result);
 });
 
 
 router.get('/consultants/division', async (req, res) => {
-    try {
-        const rows = await appService.divisionConsultantsService();
-        res.json({ success: true, data: rows });
-
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({
-            success: false,
-            message: "Internal error while performing division query."
-        });
-    }
+    const result = await appService.divisionConsultantsService();
+    res.json(result);
 });
+
 
 router.post('/cases/insert', async (req, res) => {
     const { case_id, consultant_id, ip_id, court_id, description, status, open_date, close_date } = req.body;

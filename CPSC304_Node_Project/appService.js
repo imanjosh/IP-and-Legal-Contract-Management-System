@@ -148,115 +148,37 @@ async function updateConsultant(consultant_id, name, license_number, years_exper
     return await withOracleDB(async (connection) => {
         const result = await connection.execute(
             `UPDATE Consultant_Lawyer
-             SET name = :name,
-                 license_number = :license_number,
+             SET name = :name, license_number = :license_number,
                  years_experience = :years_experience,
                  specialization = :specialization,
                  contact_details = :contact_details
              WHERE consultant_id = :consultant_id`,
-            {
-                consultant_id,
-                name,
-                license_number,
-                years_experience,
-                specialization,
-                contact_details
-            },
+            { consultant_id, name, license_number, years_experience, specialization, contact_details },
             { autoCommit: true }
         );
 
-        return result.rowsAffected > 0;
+        if (result.rowsAffected === 0) {
+            return { success: false, message: `No consultant found with ID ${consultant_id}` };
+        }
+
+        return { success: true, message: `Consultant ${consultant_id} updated successfully` };
     }).catch(() => {
-        return false;
+        return { success: false, message: "Error updating consultant" };
     });
 }
 
-/*async function filterConsultantsService(filters) {
+async function filterConsultantsService(filters) {
     return await withOracleDB(async (connection) => {
-
-        const sql = `
-            SELECT consultant_id, name, license_number, years_experience,
-                   specialization, contact_details
-            FROM Consultant_Lawyer
-            WHERE 1=1
-                AND (:name IS NULL OR LOWER(name) LIKE LOWER(:name))
-                AND (:license_number IS NULL OR license_number = :license_number)
-                AND (:min_exp IS NULL OR years_experience >= :min_exp)
-                AND (:max_exp IS NULL OR years_experience <= :max_exp)
-                AND (:specialization IS NULL OR specialization = :specialization)
-                AND (:contact IS NULL OR LOWER(contact_details) LIKE LOWER(:contact))
-        `;
-
-        const binds = {
-            name: filters.name ? `%${filters.name}%` : null,
-            license_number: filters.license_number || null,
-            min_exp: filters.min_exp || null,
-            max_exp: filters.max_exp || null,
-            specialization: filters.specialization || null,
-            contact: filters.contact ? `%${filters.contact}%` : null
+        const result = await runDynamicFilter(connection, filters);
+        return {
+            success: true,
+            message: result.rows.length > 0 ? "Results found" : "No matching consultants",
+            data: result.rows
         };
-
-        const result = await connection.execute(sql, binds, { outFormat: oracledb.OUT_FORMAT_OBJECT });
-        return result.rows;
+    }).catch(() => {
+        return { success: false, message: "Error searching consultants" };
     });
-} */
-
-    async function filterConsultantsService(filters) {
-        return await withOracleDB(async (connection) => {
-          let sql = `
-            SELECT consultant_id, name, license_number, years_experience,
-                   specialization, contact_details
-            FROM Consultant_Lawyer
-            WHERE 1=1
-          `;
-      
-          let binds = {};
-          let whereClauses = [];
-      
-          if (filters.name) {
-            whereClauses.push(`${filters.nameOp} LOWER(name) LIKE :name`);
-            binds.name = `%${filters.name.toLowerCase()}%`;
-          }
-      
-          if (filters.license_number) {
-            whereClauses.push(`${filters.licenseOp} license_number = :license_number`);
-            binds.license_number = filters.license_number;
-          }
-      
-          if (filters.min_exp) {
-            whereClauses.push(`${filters.minExpOp} years_experience >= :min_exp`);
-            binds.min_exp = filters.min_exp;
-          }
-      
-          if (filters.max_exp) {
-            whereClauses.push(`${filters.maxExpOp} years_experience <= :max_exp`);
-            binds.max_exp = filters.max_exp;
-          }
-      
-          if (filters.specialization) {
-            whereClauses.push(`${filters.specializationOp} LOWER(specialization) LIKE :spec`);
-            binds.spec = `%${filters.specialization.toLowerCase()}%`;
-          }
-      
-          if (filters.contact) {
-            whereClauses.push(`${filters.contactOp} LOWER(contact_details) LIKE :contact`);
-            binds.contact = `%${filters.contact.toLowerCase()}%`;
-          }
-      
-          if (whereClauses.length > 0) {
-            sql += " " + whereClauses.join(" ");
-          }
-      
-          const result = await connection.execute(sql, binds, {
-            outFormat: oracledb.OUT_FORMAT_OBJECT
-          });
-      
-          return result.rows;
-        });
-      }
-      
-    
-    
+}
 
 async function joinConsultationsService(params) {
     return await withOracleDB(async (connection) => {
@@ -269,45 +191,51 @@ async function joinConsultationsService(params) {
                     l.name AS consultant_name,
                     l.specialization
              FROM ConsultationBase c
-             JOIN Consultant_Lawyer l
-                 ON c.consultant_id = l.consultant_id
+             JOIN Consultant_Lawyer l ON c.consultant_id = l.consultant_id
              WHERE 1=1
                AND (:name IS NULL OR LOWER(l.name) LIKE LOWER('%' || :name || '%'))
                AND (:type IS NULL OR c.type = :type)
                AND (:date_from IS NULL OR c.consultation_date >= :date_from)
-               AND (:date_to IS NULL OR c.consultation_date <= :date_to)
-            `,
+               AND (:date_to IS NULL OR c.consultation_date <= :date_to)`,
             params
         );
-        return result.rows;
-    });
+        return {
+            success: true,
+            message: result.rows.length > 0 ? "Consultations retrieved" : "No consultations match filters",
+            data: result.rows
+        };
+    }).catch(() => ({
+        success: false,
+        message: "Error fetching consultations"
+    }));
 }
 
 async function aggregateConsultationsService(params) {
     return await withOracleDB(async (connection) => {
-        const sql = `
-            SELECT 
-                l.consultant_id AS "Consultant ID",
+        const result = await connection.execute(
+            `SELECT l.consultant_id AS "Consultant ID",
                 l.name AS "Consultant Name",
                 COUNT(c.consultation_id) AS "Number of Consultations"
-            FROM Consultant_Lawyer l
-            JOIN ConsultationBase c
-                ON l.consultant_id = c.consultant_id
-            GROUP BY 
-                l.consultant_id,
-                l.name
-            HAVING COUNT(c.consultation_id) >= :min_count
-            ORDER BY COUNT(c.consultation_id) DESC
-        `;
-
-        const result = await connection.execute(sql, params, {
-            outFormat: oracledb.OUT_FORMAT_OBJECT
-        });
-
-        return result.rows;
-    });
+             FROM Consultant_Lawyer l
+             JOIN ConsultationBase c ON l.consultant_id = c.consultant_id
+             GROUP BY l.consultant_id, l.name
+             HAVING COUNT(c.consultation_id) >= :min_count
+             ORDER BY COUNT(c.consultation_id) DESC`,
+            params,
+            { outFormat: oracledb.OUT_FORMAT_OBJECT }
+        );
+        return {
+            success: true,
+            message: result.rows.length > 0 ?
+                "Aggregated results retrieved" :
+                "No consultants meet minimum consultation count",
+            data: result.rows
+        };
+    }).catch(() => ({
+        success: false,
+        message: "Error aggregating consultations"
+    }));
 }
-
 
 async function divisionConsultantsService() {
     return await withOracleDB(async (connection) => {
@@ -321,12 +249,19 @@ async function divisionConsultantsService() {
                      SELECT *
                      FROM ConsultationBase cb
                      WHERE cb.consultant_id = c.consultant_id
-                     AND cb.type = t.type
-                 )
-             )`
+                     AND cb.type = t.type))`
         );
-        return result.rows;
-    });
+        return {
+            success: true,
+            message: result.rows.length > 0 ?
+                "Consultants fulfilling division condition" :
+                "No consultants cover all consultation types",
+            data: result.rows
+        };
+    }).catch(() => ({
+        success: false,
+        message: "Error executing division query"
+    }));
 }
 
 async function insertCase(case_id, consultant_id, ip_id, court_id, description, status, open_date, close_date) {
