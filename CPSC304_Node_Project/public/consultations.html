@@ -21,13 +21,20 @@
 
     <!-- Join Query -->
     <div class="card">
-      <h2>Join with Consultants</h2>
-      <div class="search-grid">
-        <div><label>Name</label><input type="text" id="joinName"></div>
-        <div>
-            <label>Type</label>
+      <h2>🔗 Search Consultations with Consultant Details</h2>
+      <p class="help-text">Search for consultations and view the associated consultant information. Filter by consultant name, consultation type, or date range.</p>
+      
+      <div style="display: flex; flex-direction: column; gap: 16px; margin-bottom: 16px;">
+        <div class="form-group">
+          <label>Consultant Name</label>
+          <input type="text" id="joinName" placeholder="e.g., Laura">
+          <span class="input-help">Partial match supported</span>
+        </div>
+        
+        <div class="form-group">
+            <label>Consultation Type</label>
             <select id="joinType">
-              <option value="">-- Any Type --</option>
+              <option value="">-- All Types --</option>
               <option value="Initial Review">Initial Review</option>
               <option value="Discussed patent filing">Discussed patent filing</option>
               <option value="Detailed Assessment">Detailed Assessment</option>
@@ -37,12 +44,20 @@
             </select>
           </div>
           
-        <div><label>Date From</label><input type="date" id="joinDateFrom"></div>
-        <div><label>Date To</label><input type="date" id="joinDateTo"></div>
+        <div class="form-group">
+          <label>Date From</label>
+          <input type="date" id="joinDateFrom">
+        </div>
+        
+        <div class="form-group">
+          <label>Date To</label>
+          <input type="date" id="joinDateTo">
+        </div>
       </div>
+      
       <div class="form-actions">
-        <button class="btn submit" id="joinBtn">Run Join Query</button>
-        <button class="btn cancel" id="joinReset">Clear</button>
+        <button class="btn submit" id="joinBtn">🔍 Search</button>
+        <button class="btn cancel" id="joinReset">✗ Clear</button>
       </div>
       <table class="data-table" id="joinTable">
         <thead>
@@ -64,13 +79,15 @@
 
     <!-- Aggregate Query -->
     <div class="card">
-      <h2>Aggregate Consultations</h2>
+      <h2>📊 Consultant Activity Summary</h2>
+      <p class="help-text">View consultants grouped by their total number of consultations. Set a minimum count to filter results.</p>
       <div class="form-group">
-        <label>Minimum Count</label>
-        <input type="number" id="aggMinCount" value="1">
+        <label>Minimum Number of Consultations</label>
+        <input type="number" id="aggMinCount" value="1" min="1" placeholder="e.g., 2">
+        <span class="input-help">Only show consultants with at least this many consultations</span>
       </div>
       <div class="form-actions">
-        <button class="btn submit" id="aggBtn">Run Aggregate Query</button>
+        <button class="btn submit" id="aggBtn">📊 Load Summary</button>
       </div>
       <table class="data-table" id="aggTable">
         <thead>

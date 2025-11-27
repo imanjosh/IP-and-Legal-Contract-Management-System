@@ -146,24 +146,86 @@ async function countDemotable() {
 */
 async function updateConsultant(consultant_id, name, license_number, years_experience, specialization, contact_details) {
     return await withOracleDB(async (connection) => {
-        const result = await connection.execute(
-            `UPDATE Consultant_Lawyer
-             SET name = :name, license_number = :license_number,
-                 years_experience = :years_experience,
-                 specialization = :specialization,
-                 contact_details = :contact_details
-             WHERE consultant_id = :consultant_id`,
-            { consultant_id, name, license_number, years_experience, specialization, contact_details },
-            { autoCommit: true }
-        );
+        // Build dynamic UPDATE query with only provided fields
+        let updates = [];
+        let binds = { consultant_id };
+
+        if (name && name.trim()) {
+            updates.push('name = :name');
+            binds.name = name.trim();
+        }
+        if (license_number && license_number.trim()) {
+            updates.push('license_number = :license_number');
+            binds.license_number = license_number.trim();
+        }
+        if (years_experience) {
+            updates.push('years_experience = :years_experience');
+            binds.years_experience = years_experience;
+        }
+        if (specialization && specialization.trim()) {
+            updates.push('specialization = :specialization');
+            binds.specialization = specialization.trim();
+        }
+        if (contact_details && contact_details.trim()) {
+            updates.push('contact_details = :contact_details');
+            binds.contact_details = contact_details.trim();
+        }
+
+        if (updates.length === 0) {
+            return { success: false, message: 'No fields provided to update' };
+        }
+
+        // Check if license_number would violate unique constraint
+        if (binds.license_number) {
+            const licenseCheck = await connection.execute(
+                `SELECT consultant_id FROM Consultant_Lawyer 
+                 WHERE license_number = :license_number AND consultant_id != :consultant_id`,
+                { license_number: binds.license_number, consultant_id },
+                { outFormat: oracledb.OUT_FORMAT_OBJECT }
+            );
+            if (licenseCheck.rows.length > 0) {
+                return { success: false, message: 'Update failed: This license number already exists for another consultant' };
+            }
+        }
+
+        // Check if name + contact_details would violate unique constraint
+        if (binds.name || binds.contact_details) {
+            // Get current values if not being updated
+            const current = await connection.execute(
+                `SELECT name, contact_details FROM Consultant_Lawyer WHERE consultant_id = :consultant_id`,
+                { consultant_id },
+                { outFormat: oracledb.OUT_FORMAT_OBJECT }
+            );
+            
+            if (current.rows.length === 0) {
+                return { success: false, message: `No consultant found with ID ${consultant_id}` };
+            }
+
+            const finalName = binds.name || current.rows[0].NAME;
+            const finalContact = binds.contact_details || current.rows[0].CONTACT_DETAILS;
+
+            const nameContactCheck = await connection.execute(
+                `SELECT consultant_id FROM Consultant_Lawyer 
+                 WHERE name = :name AND contact_details = :contact_details AND consultant_id != :consultant_id`,
+                { name: finalName, contact_details: finalContact, consultant_id },
+                { outFormat: oracledb.OUT_FORMAT_OBJECT }
+            );
+            if (nameContactCheck.rows.length > 0) {
+                return { success: false, message: 'Update failed: A consultant with this name and contact details combination already exists' };
+            }
+        }
+
+        const sql = `UPDATE Consultant_Lawyer SET ${updates.join(', ')} WHERE consultant_id = :consultant_id`;
+
+        const result = await connection.execute(sql, binds, { autoCommit: true });
 
         if (result.rowsAffected === 0) {
             return { success: false, message: `No consultant found with ID ${consultant_id}` };
         }
 
         return { success: true, message: `Consultant ${consultant_id} updated successfully` };
-    }).catch(() => {
-        return { success: false, message: "Error updating consultant" };
+    }).catch((err) => {
+        return { success: false, message: `Update failed: ${err.message || 'Unknown error'}` };
     });
 }
 
@@ -182,8 +244,7 @@ async function filterConsultantsService(filters) {
       const ops = {
         name: filters.nameOp || "AND",
         license_number: filters.licenseOp || "AND",
-        min_exp: filters.minExpOp || "AND",
-        max_exp: filters.maxExpOp || "AND",
+        experience: filters.minExpOp || "AND",
         specialization: filters.specializationOp || "AND",
         contact: filters.contactOp || "AND"
       };
@@ -200,8 +261,26 @@ async function filterConsultantsService(filters) {
   
       addCond("name", "LOWER(name) LIKE :name", filters.name ? `%${filters.name.toLowerCase()}%` : null);
       addCond("license_number", "license_number = :license_number", filters.license_number || null);
-      addCond("min_exp", "years_experience >= :min_exp", filters.min_exp || null);
-      addCond("max_exp", "years_experience <= :max_exp", filters.max_exp || null);
+      
+      // Handle experience range as a single condition
+      if (filters.min_exp || filters.max_exp) {
+        let expConditions = [];
+        if (filters.min_exp) {
+          expConditions.push("years_experience >= :min_exp");
+          binds.min_exp = filters.min_exp;
+        }
+        if (filters.max_exp) {
+          expConditions.push("years_experience <= :max_exp");
+          binds.max_exp = filters.max_exp;
+        }
+        const expSql = expConditions.join(" AND ");
+        if (conditions.length === 0) {
+          conditions.push(expSql);
+        } else {
+          conditions.push(`${ops.experience} (${expSql})`);
+        }
+      }
+      
       addCond("specialization", "LOWER(specialization) LIKE :specialization", filters.specialization ? `%${filters.specialization.toLowerCase()}%` : null);
       addCond("contact", "LOWER(contact_details) LIKE :contact", filters.contact ? `%${filters.contact.toLowerCase()}%` : null);
   

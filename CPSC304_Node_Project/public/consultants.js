@@ -102,7 +102,7 @@ function renderAboveAvgTable(rows) {
 
   rows.forEach(row => {
     const tr = document.createElement('tr');
-    ['consultant_id', 'name', 'specialization', 'num_consultations'].forEach(k => {
+    ['CONSULTANT_ID', 'NAME', 'SPECIALIZATION', 'NUM_CONSULTATIONS'].forEach(k => {
       const td = document.createElement('td');
       td.textContent = row[k];
       tr.appendChild(td);
@@ -117,18 +117,20 @@ function renderAboveAvgTable(rows) {
 // -------------------------
 // Load all consultants (with optional filters)
 async function loadConsultants(filters = {}) {
-    const res = await fetch("/consultants/filter", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(filters)
-    });
-  
-    const json = await res.json();
-  
-    if (json.success) {
-      renderTable(json.data, 'consultantsTable');
-    } else {
-      alert(json.message || "Error loading consultants");
+    try {
+      const res = await fetch("/consultants/filter", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(filters)
+      });
+    
+      const json = await res.json();
+    
+      if (json.success) {
+        renderTable(json.data, 'consultantsTable');
+      }
+    } catch (error) {
+      console.error("Failed to load consultants:", error);
     }
   }
   
@@ -138,7 +140,26 @@ async function loadConsultants(filters = {}) {
 async function updateConsultantForm(event) {
   event.preventDefault();
   const formData = new FormData(event.target);
-  const consultant = Object.fromEntries(formData.entries());
+  const consultant = {};
+  
+  // Only include fields that have values
+  for (let [key, value] of formData.entries()) {
+    if (value && value.trim() !== '') {
+      consultant[key] = value;
+    }
+  }
+  
+  // Consultant ID is always required
+  if (!consultant.consultant_id) {
+    alert('Consultant ID is required');
+    return;
+  }
+  
+  // Check if there's at least one field to update besides ID
+  if (Object.keys(consultant).length === 1) {
+    alert('Please provide at least one field to update');
+    return;
+  }
 
   const res = await fetch(`/consultants/${consultant.consultant_id}`, {
     method: 'PUT',
@@ -147,7 +168,7 @@ async function updateConsultantForm(event) {
   });
   const json = await res.json();
   if (json.success) {
-    alert('Consultant updated successfully');
+    alert(json.message);
     loadConsultants();
     event.target.reset();
   } else {
@@ -170,11 +191,25 @@ async function loadDivisionResults() {
 // -------------------------
 // Projection query
 async function loadProjection() {
-  const raw = document.getElementById('projAttributes').value.trim();
-  if (!raw) { alert('Please enter attributes'); return; }
-  console.log("This worked.");
-  const normalized = raw.split(',').map(s => s.trim().toLowerCase().replace(/\s+/g, '_'));
-  const query = normalized.join(',');
+  const checkboxes = [
+    document.getElementById('proj_consultant_id'),
+    document.getElementById('proj_name'),
+    document.getElementById('proj_license_number'),
+    document.getElementById('proj_years_experience'),
+    document.getElementById('proj_specialization'),
+    document.getElementById('proj_contact_details')
+  ];
+
+  const selectedAttributes = checkboxes
+    .filter(cb => cb && cb.checked)
+    .map(cb => cb.value);
+
+  if (selectedAttributes.length === 0) {
+    alert('Please select at least one attribute to display');
+    return;
+  }
+
+  const query = selectedAttributes.join(',');
   const res = await fetch(`/consultants/projection?attributes=${query}`);
   const json = await res.json();
   console.log('Projection response:', json);
@@ -196,36 +231,70 @@ async function loadAboveAverage() {
   console.log('Above-average response:', json);
 
   if (json.success) {
+    if (!json.data || json.data.length === 0) {
+      alert('No consultants found with above-average consultations. This could mean:\n- No consultation data exists\n- All consultants have equal consultations\n- No consultants exceed the average');
+    }
     renderAboveAvgTable(json.data);
   } else {
-    alert('Error loading above-average consultants');
+    alert('Error loading above-average consultants: ' + (json.message || 'Unknown error'));
   }
 }
 
 
 // -------------------------
 // Event listeners
-document.getElementById('refreshBtn').addEventListener('click', () => loadConsultants());
+
+// Enable/disable inputs based on checkboxes
+document.getElementById('enableName').addEventListener('change', (e) => {
+  document.getElementById('filterName').disabled = !e.target.checked;
+});
+
+document.getElementById('enableLicense').addEventListener('change', (e) => {
+  document.getElementById('filterLicense').disabled = !e.target.checked;
+  document.getElementById('conn2').disabled = !e.target.checked;
+});
+
+document.getElementById('enableExp').addEventListener('change', (e) => {
+  document.getElementById('filterMinExp').disabled = !e.target.checked;
+  document.getElementById('filterMaxExp').disabled = !e.target.checked;
+  document.getElementById('conn3').disabled = !e.target.checked;
+});
+
+document.getElementById('enableSpec').addEventListener('change', (e) => {
+  document.getElementById('filterSpec').disabled = !e.target.checked;
+  document.getElementById('conn4').disabled = !e.target.checked;
+});
+
+document.getElementById('enableContact').addEventListener('change', (e) => {
+  document.getElementById('filterContact').disabled = !e.target.checked;
+  document.getElementById('conn5').disabled = !e.target.checked;
+});
 
 document.getElementById('filterBtn').addEventListener('click', async () => {
     const filters = {
-      name: document.getElementById("filterName").value.trim() || null,
+      name: document.getElementById('enableName').checked ? 
+        (document.getElementById("filterName").value.trim() || null) : null,
       nameOp: "AND",
   
-      license_number: document.getElementById("filterLicense").value.trim() || null,
+      license_number: document.getElementById('enableLicense').checked ?
+        (document.getElementById("filterLicense").value.trim() || null) : null,
       licenseOp: document.getElementById("conn2").value,
   
-      min_exp: document.getElementById("filterMinExp").value.trim() || null,
+      min_exp: document.getElementById('enableExp').checked ?
+        (document.getElementById("filterMinExp").value.trim() || null) : null,
       minExpOp: document.getElementById("conn3").value,
   
-      max_exp: document.getElementById("filterMaxExp").value.trim() || null,
-      maxExpOp: document.getElementById("conn4").value,
+      max_exp: document.getElementById('enableExp').checked ?
+        (document.getElementById("filterMaxExp").value.trim() || null) : null,
+      maxExpOp: document.getElementById("conn3").value,
   
-      specialization: document.getElementById("filterSpec").value.trim() || null,
-      specializationOp: document.getElementById("conn5").value,
+      specialization: document.getElementById('enableSpec').checked ?
+        (document.getElementById("filterSpec").value.trim() || null) : null,
+      specializationOp: document.getElementById("conn4").value,
   
-      contact: document.getElementById("filterContact").value.trim() || null,
-      contactOp: "AND"
+      contact: document.getElementById('enableContact').checked ?
+        (document.getElementById("filterContact").value.trim() || null) : null,
+      contactOp: document.getElementById("conn5").value
     };
   
     const res = await fetch("/consultants/filter", {
@@ -245,12 +314,27 @@ document.getElementById('filterBtn').addEventListener('click', async () => {
   
 
 document.getElementById('resetBtn').addEventListener('click', () => {
+  // Uncheck all checkboxes
+  ['enableName', 'enableLicense', 'enableExp', 'enableSpec', 'enableContact']
+    .forEach(id => document.getElementById(id).checked = false);
+  
+  // Clear all inputs
   ['filterName','filterLicense','filterMinExp','filterMaxExp','filterSpec','filterContact']
-    .forEach(id => document.getElementById(id).value = '');
+    .forEach(id => {
+      const el = document.getElementById(id);
+      el.value = '';
+      el.disabled = true;
+    });
+  
+  // Reset and disable all dropdowns
   ['conn2','conn3','conn4','conn5'].forEach(id => {
     const el = document.getElementById(id);
-    if (el) el.value = 'AND';
+    if (el) {
+      el.value = 'AND';
+      el.disabled = true;
+    }
   });
+  
   loadConsultants();
 });
 
@@ -261,8 +345,16 @@ document.getElementById('cancelBtn').addEventListener('click', () => {
 });
 
 document.getElementById('divisionBtn').addEventListener('click', loadDivisionResults);
-document.getElementById('projBtn').addEventListener('click', loadProjection);
-document.getElementById('aboveAvgBtn').addEventListener('click', loadAboveAverage);
+
+const projBtn = document.getElementById('projBtn');
+if (projBtn) {
+  projBtn.addEventListener('click', loadProjection);
+}
+
+const aboveAvgBtn = document.getElementById('aboveAvgBtn');
+if (aboveAvgBtn) {
+  aboveAvgBtn.addEventListener('click', loadAboveAverage);
+}
 
 // -------------------------
 // Initial load

@@ -22,10 +22,8 @@
 
    
     <div class="card">
-      <h2>All Consultants</h2>
-      <div class="form-actions">
-        <button class="btn submit" id="refreshBtn">Refresh</button>
-      </div>
+      <h2>👥 All Consultants</h2>
+      <p class="help-text">View complete list of consultant lawyers in the system. Use filters below to narrow results.</p>
       <table class="data-table" id="consultantsTable">
         <thead>
           <tr>
@@ -44,71 +42,106 @@
 
    
     <div class="card search-card">
-      <h2>Search & Filter (Selection Query)</h2>
-      <p class="help-text">Use AND/OR to combine filters. Partial match allowed in Name, Spec & Contact.</p>
+      <h2>🔍 Search & Filter Consultants</h2>
+      <p class="help-text">Check the boxes for filters you want to use. Use AND/OR to combine multiple filters.</p>
+      <p class="input-help">💡 <strong>Tip:</strong> Name, Specialization, and Contact support partial matches. License Number requires exact match.</p>
 
-      <div class="search-grid">
+      <div style="display: flex; flex-direction: column; gap: 16px; margin-bottom: 16px;">
         
-        <div>
-          <label>Name</label>
-          <input type="text" id="filterName" placeholder="e.g. Laura">
-        </div>
-
-        <div><select id="conn2"><option>AND</option><option>OR</option></select></div>
-
-        <div>
-          <label>License #</label>
-          <input type="text" id="filterLicense" placeholder="Exact match">
-        </div>
-
-        <div><select id="conn3"><option>AND</option><option>OR</option></select></div>
-
-        <div>
-          <label>Experience Range</label>
-          <div class="range-inline">
-            <input type="number" id="filterMinExp" placeholder="Min">
-            <span>to</span>
-            <input type="number" id="filterMaxExp" placeholder="Max">
+        <div style="display: grid; grid-template-columns: auto auto 1fr; gap: 12px; align-items: center;">
+          <input type="checkbox" id="enableName" style="margin: 0;">
+          <div style="width: 80px;"></div>
+          <div class="form-group" style="margin: 0;">
+            <label>Name</label>
+            <input type="text" id="filterName" placeholder="e.g., Smith" disabled>
           </div>
         </div>
 
-        <div><select id="conn4"><option>AND</option><option>OR</option></select></div>
-
-        <div>
-          <label>Specialization</label>
-          <input type="text" id="filterSpec" placeholder="e.g. Patent Law">
+        <div style="display: grid; grid-template-columns: auto auto 1fr; gap: 12px; align-items: center;">
+          <input type="checkbox" id="enableLicense" style="margin: 0;">
+          <select id="conn2" disabled style="width: 80px;">
+            <option>AND</option>
+            <option>OR</option>
+          </select>
+          <div class="form-group" style="margin: 0;">
+            <label>License Number</label>
+            <input type="text" id="filterLicense" placeholder="Exact match required" disabled>
+          </div>
         </div>
 
-        <div><select id="conn5"><option>AND</option><option>OR</option></select></div>
+        <div style="display: grid; grid-template-columns: auto auto 1fr; gap: 12px; align-items: center;">
+          <input type="checkbox" id="enableExp" style="margin: 0;">
+          <select id="conn3" disabled style="width: 80px;">
+            <option>AND</option>
+            <option>OR</option>
+          </select>
+          <div class="form-group" style="margin: 0;">
+            <label>Years of Experience</label>
+            <div class="range-inline">
+              <input type="number" id="filterMinExp" placeholder="Min" min="0" disabled>
+              <span>to</span>
+              <input type="number" id="filterMaxExp" placeholder="Max" min="0" disabled>
+            </div>
+          </div>
+        </div>
 
-        <div>
-          <label>Contact</label>
-          <input type="text" id="filterContact" placeholder="Email contains…">
+        <div style="display: grid; grid-template-columns: auto auto 1fr; gap: 12px; align-items: center;">
+          <input type="checkbox" id="enableSpec" style="margin: 0;">
+          <select id="conn4" disabled style="width: 80px;">
+            <option>AND</option>
+            <option>OR</option>
+          </select>
+          <div class="form-group" style="margin: 0;">
+            <label>Specialization</label>
+            <input type="text" id="filterSpec" placeholder="e.g., Patent Law" disabled>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: auto auto 1fr; gap: 12px; align-items: center;">
+          <input type="checkbox" id="enableContact" style="margin: 0;">
+          <select id="conn5" disabled style="width: 80px;">
+            <option>AND</option>
+            <option>OR</option>
+          </select>
+          <div class="form-group" style="margin: 0;">
+            <label>Contact Email</label>
+            <input type="text" id="filterContact" placeholder="Email contains..." disabled>
+          </div>
         </div>
 
       </div>
 
       <div class="form-actions">
-        <button class="btn submit" id="filterBtn">Apply Filters</button>
-        <button class="btn cancel" id="resetBtn">Clear</button>
+        <button class="btn submit" id="filterBtn">🔍 Apply Filters</button>
+        <button class="btn cancel" id="resetBtn">✗ Clear Filters</button>
       </div>
     </div>
 
 
 
     <div class="card form-card">
-      <h2>Update Consultant</h2>
-      <p class="help-text">Enter ID, then only fill fields you want to update.</p>
+      <h2>✏️ Update Consultant Information</h2>
+      <p class="help-text">Enter the consultant ID and modify only the fields you want to update. Leave other fields empty to keep current values.</p>
 
       <form id="consultantForm">
-        <div class="form-group"><label>ID</label><input type="number" name="consultant_id" required></div>
-        <div class="form-group"><label>Name</label><input type="text" name="name"></div>
-        <div class="form-group"><label>License Number</label><input type="text" name="license_number"></div>
+        <div class="form-group">
+          <label>Consultant ID <span style="color: red;">*</span></label>
+          <input type="number" name="consultant_id" placeholder="e.g., 201" required>
+          <span class="input-help">Required - ID of consultant to update</span>
+        </div>
+        <div class="form-group">
+          <label>Name</label>
+          <input type="text" name="name" placeholder="Enter new name">
+        </div>
+        <div class="form-group">
+          <label>License Number</label>
+          <input type="text" name="license_number" placeholder="Enter new license number">
+        </div>
 
         <div class="form-group">
-          <label>Years Exp.</label>
+          <label>Years of Experience</label>
           <select name="years_experience" id="yearsExperience" class="form-control">
-            <option value="">--Select--</option>
+            <option value="">-- No change --</option>
             <option value="1">1</option><option value="2">2</option><option value="3">3</option>
             <option value="4">4</option><option value="5">5</option><option value="6">6</option>
             <option value="7">7</option><option value="8">8</option><option value="9">9</option>
@@ -116,25 +149,97 @@
           </select>
         </div>
 
-        <div class="form-group"><label>Specialization</label><input type="text" name="specialization"></div>
-        <div class="form-group"><label>Contact</label><input type="email" name="contact_details"></div>
+        <div class="form-group">
+          <label>Specialization</label>
+          <input type="text" name="specialization" placeholder="e.g., Patent Law">
+        </div>
+        <div class="form-group">
+          <label>Contact Email</label>
+          <input type="email" name="contact_details" placeholder="consultant@example.com">
+        </div>
 
         <div class="form-actions">
-          <button type="submit" class="btn submit">Update</button>
-          <button type="button" class="btn cancel" id="cancelBtn">Cancel</button>
+          <button type="submit" class="btn submit">✓ Update Consultant</button>
+          <button type="button" class="btn cancel" id="cancelBtn">✗ Cancel</button>
         </div>
       </form>
     </div>
 
+    <hr class="section-divider">
+
+    <div class="card">
+      <h2>📋 Custom Consultant View</h2>
+      <p class="help-text">Select which consultant attributes you want to view. Choose any combination of fields.</p>
+      <div class="form-group">
+        <label>Select Attributes to Display:</label>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 8px;">
+          <label style="cursor: pointer;">
+            <input type="checkbox" id="proj_consultant_id" value="consultant_id">
+            Consultant ID
+          </label>
+          <label style="cursor: pointer;">
+            <input type="checkbox" id="proj_name" value="name">
+            Name
+          </label>
+          <label style="cursor: pointer;">
+            <input type="checkbox" id="proj_license_number" value="license_number">
+            License Number
+          </label>
+          <label style="cursor: pointer;">
+            <input type="checkbox" id="proj_years_experience" value="years_experience">
+            Years Experience
+          </label>
+          <label style="cursor: pointer;">
+            <input type="checkbox" id="proj_specialization" value="specialization">
+            Specialization
+          </label>
+          <label style="cursor: pointer;">
+            <input type="checkbox" id="proj_contact_details" value="contact_details">
+            Contact Details
+          </label>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="btn submit" id="projBtn">📋 Load Selected Columns</button>
+      </div>
+      <table class="data-table" id="projectionTable">
+        <thead><tr></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <hr class="section-divider">
+
+    <div class="card">
+      <h2>⭐ High-Activity Consultants</h2>
+      <p class="help-text">Find consultants who have more consultations than the average consultant.</p>
+      <p class="input-help">💡 This uses a nested aggregation query with a subquery to calculate the average.</p>
+      <button class="btn submit" id="aboveAvgBtn">⭐ Find Above-Average Consultants</button>
+
+      <table class="data-table" id="aboveAvgTable">
+        <thead>
+          <tr>
+            <th>Consultant ID</th>
+            <th>Name</th>
+            <th>Specialization</th>
+            <th>Number of Consultations</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <hr class="section-divider">
 
    
     <div class="card">
-      <h2>Division Query</h2>
-      <p class="help-text">Consultants who handled ALL consultation types.</p>
-      <button class="btn submit" id="divisionBtn">Show</button>
+      <h2>🎯 Consultants with All Consultation Types</h2>
+      <p class="help-text">Find consultants who have handled every type of consultation available in the system.</p>
+      <p class="input-help">💡 This advanced query uses division to identify the most versatile consultants.</p>
+      <button class="btn submit" id="divisionBtn">🎯 Run Query</button>
 
       <table class="data-table" id="divisionTable">
-        <thead><tr><th>ID</th><th>Name</th></tr></thead>
+        <thead><tr><th>Consultant ID</th><th>Name</th></tr></thead>
         <tbody></tbody>
       </table>
     </div>
