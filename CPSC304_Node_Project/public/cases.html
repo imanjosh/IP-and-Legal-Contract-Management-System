@@ -50,8 +50,12 @@
           <input type="text" name="description" placeholder="Brief description" maxlength="200">
         </div>
         <div class="form-group">
-          <label>Case Status</label>
-          <input type="text" name="status" placeholder="Enter current status" maxlength="50">
+          <label for="status">Case Status</label>
+          <select name="status" id="status">
+            <option value="" disabled selected>Select case status</option>
+            <option value="open">Open</option>
+            <option value="closed">Closed</option>
+          </select>
         </div>
         <div class="form-group">
           <label>Open Date</label>
