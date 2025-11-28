@@ -1,29 +1,5 @@
 // consultants.js
 
-// Utility: render rows into a table
-/*function renderTable(rows, tableId) {
-  const tbody = document.querySelector(`#${tableId} tbody`);
-  tbody.innerHTML = '';
-  if (!rows || rows.length === 0) {
-    const tr = document.createElement('tr');
-    const td = document.createElement('td');
-    td.colSpan = 10;
-    td.textContent = 'No results found';
-    tr.appendChild(td);
-    tbody.appendChild(tr);
-    return;
-  }
-  rows.forEach(row => {
-    const tr = document.createElement('tr');
-    Object.values(row).forEach(val => {
-      const td = document.createElement('td');
-      td.textContent = val;
-      tr.appendChild(td);
-    });
-    tbody.appendChild(tr);
-  });
-} */
-
   function renderTable(rows, tableId) {
     const tbody = document.querySelector(`#${tableId} tbody`);
     tbody.innerHTML = '';
@@ -54,7 +30,7 @@ function renderProjectionTable(rows) {
   const thead = document.querySelector('#projectionTable thead');
   const tbody = document.querySelector('#projectionTable tbody');
 
-  thead.innerHTML = '<tr></tr>';   // keep valid structure
+  thead.innerHTML = '<tr></tr>';
   tbody.innerHTML = '';
 
   if (!rows || rows.length === 0) {
@@ -112,10 +88,6 @@ function renderAboveAvgTable(rows) {
 }
 
 
-
-
-// -------------------------
-// Load all consultants (with optional filters)
 async function loadConsultants(filters = {}) {
     try {
       const res = await fetch("/consultants/filter", {
@@ -135,27 +107,22 @@ async function loadConsultants(filters = {}) {
   }
   
 
-// -------------------------
-// Update consultant
 async function updateConsultantForm(event) {
   event.preventDefault();
   const formData = new FormData(event.target);
   const consultant = {};
   
-  // Only include fields that have values
   for (let [key, value] of formData.entries()) {
     if (value && value.trim() !== '') {
       consultant[key] = value;
     }
   }
   
-  // Consultant ID is always required
   if (!consultant.consultant_id) {
     alert('Consultant ID is required');
     return;
   }
   
-  // Check if there's at least one field to update besides ID
   if (Object.keys(consultant).length === 1) {
     alert('Please provide at least one field to update');
     return;
@@ -176,8 +143,6 @@ async function updateConsultantForm(event) {
   }
 }
 
-// -------------------------
-// Division query
 async function loadDivisionResults() {
   const res = await fetch('/consultants/division');
   const json = await res.json();
@@ -188,8 +153,6 @@ async function loadDivisionResults() {
   }
 }
 
-// -------------------------
-// Projection query
 async function loadProjection() {
   const checkboxes = [
     document.getElementById('proj_consultant_id'),
@@ -222,9 +185,6 @@ async function loadProjection() {
 }
 
 
-
-// -------------------------
-// Above-average query
 async function loadAboveAverage() {
   const res = await fetch('/consultants/above-average');
   const json = await res.json();
@@ -241,10 +201,7 @@ async function loadAboveAverage() {
 }
 
 
-// -------------------------
-// Event listeners
 
-// Enable/disable inputs based on checkboxes
 document.getElementById('enableName').addEventListener('change', (e) => {
   document.getElementById('filterName').disabled = !e.target.checked;
 });
@@ -314,11 +271,9 @@ document.getElementById('filterBtn').addEventListener('click', async () => {
   
 
 document.getElementById('resetBtn').addEventListener('click', () => {
-  // Uncheck all checkboxes
   ['enableName', 'enableLicense', 'enableExp', 'enableSpec', 'enableContact']
     .forEach(id => document.getElementById(id).checked = false);
   
-  // Clear all inputs
   ['filterName','filterLicense','filterMinExp','filterMaxExp','filterSpec','filterContact']
     .forEach(id => {
       const el = document.getElementById(id);
@@ -326,7 +281,6 @@ document.getElementById('resetBtn').addEventListener('click', () => {
       el.disabled = true;
     });
   
-  // Reset and disable all dropdowns
   ['conn2','conn3','conn4','conn5'].forEach(id => {
     const el = document.getElementById(id);
     if (el) {
@@ -356,6 +310,4 @@ if (aboveAvgBtn) {
   aboveAvgBtn.addEventListener('click', loadAboveAverage);
 }
 
-// -------------------------
-// Initial load
 loadConsultants();

@@ -507,3 +507,76 @@ INSERT INTO Uses VALUES (613, 407);
 INSERT INTO Uses VALUES (613, 408);
 INSERT INTO Uses VALUES (614, 406);
 INSERT INTO Uses VALUES (614, 410);
+
+
+-- Triggers --
+
+CREATE OR REPLACE TRIGGER trg_max_cases_per_day
+BEFORE INSERT ON "Case"
+FOR EACH ROW
+DECLARE
+    v_count INTEGER;
+BEGIN
+    -- Count how many cases already exist for this court on this date
+    SELECT COUNT(*)
+    INTO v_count
+    FROM "Case"
+    WHERE court_id   = :NEW.court_id
+      AND open_date  = :NEW.open_date;
+
+    -- If already 3, block the insert
+    IF v_count >= 3 THEN
+        RAISE_APPLICATION_ERROR(
+            -20001,
+            'Error: A court cannot have more than 3 cases on the same day.'
+        );
+    END IF;
+END;
+/
+
+
+/*
+FOR TRIGGER TESTING PURPOSES:
+
+-- Create client
+INSERT INTO Client (client_id, name, contact_info, organization)
+VALUES (9991, 'Test Client', 'test@client.com', NULL);
+
+-- Create consultant
+INSERT INTO Consultant_Lawyer (consultant_id, name, license_number, years_experience, specialization, contact_details)
+VALUES (9992, 'Test Lawyer', 'LIC-9992', 5, 'Test Law', 'test@law.com');
+
+-- Create court
+INSERT INTO Court (court_id, name, jurisdiction)
+VALUES (9993, 'Test Court', 'BC Supreme Court');
+
+-- Create IPs (for the 4 test cases)
+INSERT INTO IP_merge_has_an (ip_id, filing_date, status, description, title, registration_number, client_id)
+VALUES (9001, DATE '2025-01-01', 'Pending', 'Test IP 1', 'IP1', 'REG-T9001', 9991);
+
+INSERT INTO IP_merge_has_an (ip_id, filing_date, status, description, title, registration_number, client_id)
+VALUES (9002, DATE '2025-01-01', 'Pending', 'Test IP 2', 'IP2', 'REG-T9002', 9991);
+
+INSERT INTO IP_merge_has_an (ip_id, filing_date, status, description, title, registration_number, client_id)
+VALUES (9003, DATE '2025-01-01', 'Pending', 'Test IP 3', 'IP3', 'REG-T9003', 9991);
+
+INSERT INTO IP_merge_has_an (ip_id, filing_date, status, description, title, registration_number, client_id)
+VALUES (9004, DATE '2025-01-01', 'Pending', 'Test IP 4', 'IP4', 'REG-T9004', 9991);
+
+-- 2. Insert 3 valid cases (should succeed)
+
+INSERT INTO "Case" (case_id, consultant_id, ip_id, court_id, description, status, open_date, close_date)
+VALUES (8001, 9992, 9001, 9993, 'Test Case A', 'Open', DATE '2025-02-01', NULL);
+
+INSERT INTO "Case" (case_id, consultant_id, ip_id, court_id, description, status, open_date, close_date)
+VALUES (8002, 9992, 9002, 9993, 'Test Case B', 'Open', DATE '2025-02-01', NULL);
+
+INSERT INTO "Case" (case_id, consultant_id, ip_id, court_id, description, status, open_date, close_date)
+VALUES (8003, 9992, 9003, 9993, 'Test Case C', 'Open', DATE '2025-02-01', NULL);
+
+
+-- 3. Insert 4th case (should FAIL because of the trigger)
+
+INSERT INTO "Case" (case_id, consultant_id, ip_id, court_id, description, status, open_date, close_date)
+VALUES (8004, 9992, 9004, 9993, 'Test Case D', 'Open', DATE '2025-02-01', NULL);
+*/
