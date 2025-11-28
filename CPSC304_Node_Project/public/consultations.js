@@ -34,7 +34,7 @@ function renderTable(rows, tableId) {
     let date_to = document.getElementById('joinDateTo').value;
 
     if (!name && !type && !date_from && !date_to) {
-        alert(json.message || 'Please enter at least one search filter.');
+        alert('Please enter at least one search filter.');
         return;
     }
 
