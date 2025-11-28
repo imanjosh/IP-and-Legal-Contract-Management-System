@@ -14,4 +14,6 @@ The system provides a structured way to handle **legal cases** and **consultatio
 ## Purpose
 The goal of this project is to create a comprehensive data model that supports IP-related legal processes ,from client consultations to case management enabling efficient tracking of intellectual property and associated legal documentation.
 
-Citation: Project built on the sample project provided, using it as a template.
+Citation: 
+- Project built on the sample project provided, using it as a template.
+- Learnt trigger statements from websites like: https://www.geeksforgeeks.org/sql/sql-trigger-student-database/ and many youtube videos.
