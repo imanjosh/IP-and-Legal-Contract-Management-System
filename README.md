@@ -1,7 +1,7 @@
 # Intellectual Property & Legal Contract Management System
 
 ## Overview
-This project models an **Intellectual Property (IP) Legal Management System**.  
+This project models an **Intellectual Property (IP) & Legal Contract Management System**.  
 It is designed to represent and manage relationships between **clients**, **consultant lawyers**, **legal cases**, and various types of **intellectual property**, including:
 
 - Patents  
@@ -18,3 +18,4 @@ Citation:
 - Project built on the sample project provided, using it as a template.
 
 - Learnt trigger statements from websites like: https://www.geeksforgeeks.org/sql/sql-trigger-student-database/ and many youtube videos.
+
