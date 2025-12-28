@@ -12,8 +12,9 @@ It is designed to represent and manage relationships between **clients**, **cons
 The system provides a structured way to handle **legal cases** and **consultations** while maintaining data integrity and consistency across all entities.
 
 ## Purpose
-The goal of this project is to create a comprehensive data model that supports IP-related legal processes ,from client consultations to case management enabling efficient tracking of intellectual property and associated legal documentation.
+The goal of this project is to create a comprehensive data model that supports IP-related legal processes, from client consultations to case management enabling efficient tracking of intellectual property and associated legal documentation.
 
 Citation: 
 - Project built on the sample project provided, using it as a template.
+
 - Learnt trigger statements from websites like: https://www.geeksforgeeks.org/sql/sql-trigger-student-database/ and many youtube videos.
